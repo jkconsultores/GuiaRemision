@@ -1,0 +1,100 @@
+<div class="wrapper">
+  <app-navbar></app-navbar>
+  <div class="card m-2">
+    <div class="card-header">
+      <h4>Listado de Guias</h4>
+    </div>
+    <div class="card-body">
+  <!--     <div class="row mb-2">
+        <div class="col-1">
+          <label>Desde:</label>
+        </div>
+        <div class="col-2">
+          <input type="date" class="form-control">
+        </div>
+        <div class="col-1">
+          <label>Hasta:</label>
+        </div>
+        <div class="col-2">
+          <input type="date" class="form-control">
+        </div>
+
+      </div> -->
+      <div class="table table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <th style="min-width: 100px;">Serie</th>
+            <th>Estado</th>
+            <th>fecha de Emision</th>
+            <th>Correo</th>
+            <th>N° Doc Adquiriente</th>
+            <th>Tipo Doc Adquiriente</th>
+            <th>Adquiriente</th>
+            <th>Motivo Traslado</th>
+            <th>Descripción</th>
+            <th>Peso Total</th>
+            <th>Fecha inicio</th>
+            <th>Opt</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of spe_despatch">
+              <td>{{item.serieNumeroGuia}}</td>
+              <td>
+                <span class="badge text-bg-primary" *ngIf="item.bl_estadoRegistro=='N'">Generado</span>
+                <span class="badge text-bg-warning" *ngIf="item.bl_estadoRegistro=='A'">En proceso</span>
+                <span class="badge text-bg-danger" *ngIf="item.bl_estadoRegistro=='E'">Error</span>
+                <span class="badge text-bg-success" *ngIf="item.bl_estadoRegistro=='L'">Enviado</span>
+              <td>{{item.fechaEmisionGuia}}</td>
+              <td>{{item.correoDestinatario}}</td>
+              <td>{{item.numeroDocumentoDestinatario}}</td>
+              <td>{{item.tipoDocumentoDestinatario}}</td>
+              <td>{{item.razonSocialDestinatario}}</td>
+              <td>{{item.motivoTraslado}}</td>
+              <td>{{item.descripcionMotivoTraslado}}</td>
+              <td>{{item.pesoBrutoTotalBienes}}</td>
+              <td>{{item.fechaInicioTraslado}}</td>
+              <td><i (click)="abrirModal(DetallesSpe,item.serieNumeroGuia)" class="fa-sharp fa-solid fa-circle-info" style="font-size: 25px;color: rgb(3, 133, 255);cursor: pointer;"></i></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #DetallesSpe>
+  <div class="card">
+    <div class="card-header text-center">
+      <h5>Detalles</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive" style="height: 400px;">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th scope="col">N° Orden</th>
+              <th scope="col">Serie</th>
+<!--               <th scope="col">Tipo Documento Guia</th> -->
+              <th scope="col">Cantidad</th>
+              <th scope="col">UnidadMedida</th>
+              <th scope="col">Descripcion</th>
+              <th scope="col">Codigo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of spe_despatch_item" style="cursor: pointer;">
+              <th scope="row">{{item.numeroOrdenItem}}</th>
+<!--               <td>{{item.tipoDocumentoRemitente}}</td>
+              <td>{{item.numeroDocumentoRemitente}}</td> -->
+              <td>{{item.serieNumeroGuia}}</td>
+      <!--         <td>{{item.tipoDocumentoGuia}}</td> -->
+              <td>{{item.cantidad}}</td>
+              <td>{{item.unidadMedida}}</td>
+              <td>{{item.descripcion}}</td>
+              <td>{{item.codigo}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-template>

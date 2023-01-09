@@ -7,10 +7,13 @@
     <div class="card-body">
       <div class="mb-1 row">
         <div class="col-2">
-          <label>EMPRESA</label>
+          <label>EMPRESA <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-2">
-            <ng-select2 [data]="empresas" (ngModelChange)="empresaChange($event)"  width="210"  [(ngModel)]="empresa" #empresaid></ng-select2>
+          <select class="form-select" (ngModelChange)="empresaChange($event)" aria-label=".form-select-sm example" [(ngModel)]="empresa">
+            <option value="">Seleccione una empresa</option>
+            <option value="{{item.id}}" *ngFor="let item of empresas">{{item.text}}</option>
+            </select>
          </div>
         <div class="col-2">
           <label style="width: 150px;">FECHA EMISION</label>
@@ -27,13 +30,13 @@
       </div>
       <div class="mb-1 row">
         <div class="col-2">
-          <label style="width: 150px;">SERIE Y NUMERO</label>
+          <label style="width: 150px;">SERIE Y NUMERO <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-2">
-          <input type="text" style="width: 210px;" class="form-control" [(ngModel)]="serieNumero">
+          <input type="text"  class="form-control" [(ngModel)]="serieNumero">
         </div>
         <div class="col-2">
-          <label style="width: 150px;">DESTINATARIO</label>
+          <label style="width: 150px;">DESTINATARIO <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-6">
           <div class="input-group mb-1">
@@ -46,47 +49,64 @@
       </div>
       <div class="mb-1 row">
         <div class="col-2">
-          <label style="width: 150px;">MODALIDAD</label>
+          <label style="width: 150px;">MODALIDAD <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-2">
-          <ng-select2 [data]="modalidad" (ngModelChange)="ModalidadChange($event)" width="210" [(ngModel)]="vmodalidad"></ng-select2>
+         <select class="form-select " aria-label=".form-select-sm example" [(ngModel)]="vmodalidad">
+            <option value="{{item.id}}" *ngFor="let item of modalidad">{{item.text}}</option>
+          </select>
         </div>
         <div class="col-2">
-          <label style="width: 150px;">DESTINO</label>
+          <label style="width: 150px;">DESTINO <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-6">
-          <ng-select2 [data]="destino" (ngModelChange)="DestinoChange($event)"  width="680" [(ngModel)]="vdestino"></ng-select2>
+          <select class="form-select " aria-label=".form-select-sm example" [(ngModel)]="vdestino">
+            <option value="">Seleccione un destino</option>
+            <option value="{{item.id}}" *ngFor="let item of destino">{{item.text}}</option>
+          </select>
         </div>
       </div>
       <div class="mb-1 row">
         <div class="col-2">
-          <label style="width: 150px;">MOTIVO</label>
+          <label style="width: 150px;">MOTIVO <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-2">
-          <ng-select2 [data]="motivos" (ngModelChange)="motivoChange($event)" width="210" [(ngModel)]="vmotivo"></ng-select2>
+          <!-- <ng-select2 [data]="motivos" (ngModelChange)="motivoChange($event)" width="210" [(ngModel)]="vmotivo"></ng-select2> -->
+          <select class="form-select" aria-label=".form-select-sm example" [(ngModel)]="vmotivo">
+            <option value="">Seleccione un motivo</option>
+            <option value="{{item.id+'-'+item.text}}" *ngFor="let item of motivos">{{item.text}}</option>
+          </select>
         </div>
         <div class="col-2">
-          <label style="width: 150px;">ORIGEN</label>
+          <label style="width: 150px;">ORIGEN <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-6">
-          <ng-select2 [data]="origen" (ngModelChange)="origenChange($event)" width="680" [(ngModel)]="vorigen"></ng-select2>
+          <!-- <ng-select2 [data]="origen" (ngModelChange)="origenChange($event)" width="680" [(ngModel)]="vorigen"></ng-select2> -->
+          <select class="form-select " aria-label=".form-select-sm example" [(ngModel)]="vorigen">
+            <option value="">Seleccione un origen</option>
+            <option value="{{item.id}}" *ngFor="let item of origen">{{item.text}}</option>
+          </select>
         </div>
       </div>
       <div class="mb-1 row">
         <div class="col-2">
-          <label style="width: 150px;">PESO BRUTO</label>
+          <label style="width: 150px;">PESO BRUTO <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-1">
-          <input type="text" class="form-control" [(ngModel)]="pesoBruto">
+          <input type="text" class="form-control" (keypress)="validarDecimal($event)" [(ngModel)]="pesoBruto">
         </div>
         <div class="col-1">
-          <ng-select2 [data]="medidas"(ngModelChange)="medidaChange($event)"  width="95" [(ngModel)]="medida"></ng-select2>
+          <!-- <ng-select2 [data]="medidas"(ngModelChange)="medidaChange($event)"  width="95" [(ngModel)]="medida"></ng-select2> -->
+          <select class="form-select " aria-label=".form-select-sm example" [(ngModel)]="medida">
+            <option selected>Seleccionar</option>
+            <option value="{{item.id}}" *ngFor="let item of medidas">{{item.text}}</option>
+          </select>
         </div>
         <div class="col-2">
           <label style="width: 150px;">NRO BULTOS</label>
         </div>
         <div class="col-2">
-          <input type="text" class="form-control" [(ngModel)]="Nrobultos">
+          <input type="text" class="form-control" (keypress)="validarNumero($event)" [(ngModel)]="Nrobultos" >
         </div>
     <!--     <div class="col-1">
           <label style="width: 150px;">ESTADO</label>
@@ -106,7 +126,7 @@
       <hr>
       <div class="row">
         <div class="col-2" *ngIf="vmodalidad!='02'">
-          <label style="width: 150px;">TRANSPORTISTA</label>
+          <label style="width: 150px;">TRANSPORTISTA <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-2 " *ngIf="vmodalidad!='02'">
           <div class="input-group mb-1">
@@ -162,7 +182,7 @@
           </div>
         </div>
         <div class="col-2">
-          <button class="btn btn-light mb-1" (click)="abrirModal(Producto);obtenerProductos();" style="width: 200px;height: 80px;">Agregar Detalle</button>
+          <button class="btn btn-light mb-1" (click)="obtenerProductos(Producto);" style="width: 200px;height: 80px;">Agregar Detalle</button>
         </div>
         <div class="col-2">
           <button class="btn btn-primary mb-1" style="width: 200px;height: 80px;" (click)="declararGuia()">Declarar</button>
@@ -201,11 +221,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr (click)="asignarDestinatario(item.razonsocialadquiriente,item.numerodocumentoadquiriente,item.correo,item.tipodocumentoadquiriente)" *ngFor="let item of destinatarios" style="cursor: pointer;">
-              <th scope="row">{{item.numerodocumentoadquiriente}}</th>
-              <td>{{item.tipodocumentoadquiriente}}</td>
-              <td>{{item.razonsocialadquiriente}}</td>
-              <td>{{item.direccionadquiriente}}</td>
+            <tr (click)="asignarDestinatario(item.RAZONSOCIALADQUIRIENTE,item.NUMERODOCUMENTOADQUIRIENTE,item.CORREO,item.TIPODOCUMENTOADQUIRIENTE)" *ngFor="let item of destinatarios" style="cursor: pointer;">
+              <th scope="row">{{item.NUMERODOCUMENTOADQUIRIENTE}}</th>
+              <td>{{item.TIPODOCUMENTOADQUIRIENTE}}</td>
+              <td>{{item.RAZONSOCIALADQUIRIENTE}}</td>
+              <td>{{item.DIRECCIONADQUIRIENTE}}</td>
             </tr>
           </tbody>
         </table>
@@ -243,11 +263,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr (click)="asignarTransportista(item.numerodocumentotransportista,item.razonsocialtransportista,item.tipodocumentotransportista,item.numeroregistromtc)" *ngFor="let item of transportista" style="cursor: pointer;">
-              <th scope="row">{{item.numerodocumentotransportista}}</th>
-              <td>{{item.tipodocumentotransportista}}</td>
-              <td>{{item.razonsocialtransportista}}</td>
-              <td>{{item.numeroregistromtc}}</td>
+            <tr (click)="asignarTransportista(item.NUMERODOCUMENTOTRANSPORTISTA,item.RAZONSOCIALTRANSPORTISTA,item.TIPODOCUMENTOTRANSPORTISTA,item.NUMEROREGISTROMTC)" *ngFor="let item of transportistas" style="cursor: pointer;">
+              <th scope="row">{{item.NUMERODOCUMENTOTRANSPORTISTA}}</th>
+              <td>{{item.TIPODOCUMENTOTRANSPORTISTA}}</td>
+              <td>{{item.RAZONSOCIALTRANSPORTISTA}}</td>
+              <td>{{item.NUMEROREGISTROMTC}}</td>
             </tr>
           </tbody>
         </table>
@@ -286,13 +306,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr (click)="asignarChofer(item.numerodocumentochofer,item.nombre,item.apellido,item.placavehiculo,item.tipodocumentochofer,item.brevete)" *ngFor="let item of chofer "
+            <tr (click)="asignarChofer(item.NUMERODOCUMENTOCHOFER,item.NOMBRE,item.APELLIDO,item.PLACAVEHICULO,item.TIPODOCUMENTOCHOFER,item.BREVETE)" *ngFor="let item of chofer "
             style="cursor: pointer;" >
-              <th scope="row">{{item.numerodocumentochofer}}</th>
-              <td>{{item.tipodocumentochofer}}</td>
-              <td>{{item.nombre+" "+item.apellido}}</td>
-              <td>{{item.brevete}}</td>
-              <td>{{item.placavehiculo}}</td>
+              <th scope="row">{{item.NUMERODOCUMENTOCHOFER}}</th>
+              <td>{{item.TIPODOCUMENTOCHOFER}}</td>
+              <td>{{item.NOMBRE+" "+item.APELLIDO}}</td>
+              <td>{{item.BREVETE}}</td>
+              <td>{{item.PLACAVEHICULO}}</td>
             </tr>
           </tbody>
         </table>
@@ -320,9 +340,12 @@
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a> Tipo
             Doc:</label>
           <div class="col-sm-9">
-            <input type="text" ngModel class="form-control"
-              [ngClass]="{'is-invalid': f.submitted&&f.controls['TIPODOCUMENTOADQUIRIENTE'].errors}"
-              name="TIPODOCUMENTOADQUIRIENTE" placeholder="Ingrese el tipo de documento" required>
+              <select ngModel [(ngModel)]="tipodocForm" class="form-select" name="TIPODOCUMENTOADQUIRIENTE"  required>
+              <option value="01">DNI</option>
+              <option value="04">CARNET DE EXTRANJERIA</option>
+              <option value="06">RUC</option>
+              <option value="07">PASAPORTE</option>
+              </select>
           </div>
         </div>
         <div class="form-group row">
@@ -577,12 +600,13 @@
           <label style="width: 100px;margin-top: 3px;margin-left: 30px;">Producto:</label>
         </div>
         <div class="col-5">
-          <div class="input-group mb-1">
+          <input type="text" class="form-control mb-1">
+    <!--       <div class="input-group mb-1">
             <input type="text" class="form-control">
             <div class="input-group-append">
               <button class="input-group-text">+</button>
             </div>
-          </div>
+          </div> -->
         </div>
 
       </div>
@@ -597,7 +621,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr (click)="seleccionarProducto(item.codigo,item.descripcion,item.unidadmedida,i)" *ngFor="let item of productos; let i = index" style="cursor: pointer;"
+            <tr (click)="seleccionarProducto(item.codigo,item.descripcion,item.unidadmedida,i)" *ngFor="let item of productos| paginate: {id:'pasistencia', itemsPerPage: 10, currentPage: pageProduct } ; let i = index " style="cursor: pointer;"
             [ngClass]="{'selected-row': i === selectedRow}">
               <th scope="row">{{item.id}}</th>
               <td>{{item.codigo}}</td>
@@ -607,6 +631,7 @@
           </tbody>
         </table>
       </div>
+      <div style="text-align: center;"><pagination-controls id="pasistencia" (pageChange)="pageProduct = $event"></pagination-controls></div>
         <div class="row">
           <div class="col-2">
             <label style="width: 100px;margin-top: 3px;">Descripción:</label>
@@ -619,17 +644,17 @@
             <button class="btn btn-danger" (click)="salirProducto()" style="width: 100px;">Salir</button>
           </div>
           <div class="col-2">
-           <input type="number" class="form-control" [(ngModel)]="cantidad"><br>
+           <input type="number" class="form-control" [(ngModel)]="cantidad" (keypress)="validarDecimal($event)"><br>
            <button class="btn btn-primary" (click)="asignarProducto()" style="width: 100px;">Asignar</button>
           </div>
         </div>
     </div>
   </div>
 </ng-template>
-<ng-template #CrudProducto>
+<!-- <ng-template #CrudProducto>
   <div class="card">
     <div class="card-header">
-      <h5>Registrar Chofer</h5>
+      <h4>Registrar Chofer</h4>
     </div>
     <div class="card-body">
       <form (ngSubmit)="crearChofer(chofer)" #chofer="ngForm" id="chofer">
@@ -697,3 +722,4 @@
     </div>
   </div>
 </ng-template>
+ -->

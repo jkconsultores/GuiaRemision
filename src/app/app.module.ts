@@ -10,7 +10,8 @@ import { NgSelect2Module } from 'ng-select2';
 import { ModalComponent } from './pages/modal/modal.component';
 import { FacturacionElectronicaComponent } from './pages/facturacion-electronica/facturacion-electronica.component';
 import { NavbarComponent } from './pages/navbar/navbar.component';
-
+import { ReporteComponent } from './pages/reporte/reporte.component';
+import {NgxPaginationModule} from 'ngx-pagination';
 @NgModule({
   declarations: [
     AppComponent,
@@ -18,14 +19,16 @@ import { NavbarComponent } from './pages/navbar/navbar.component';
     MainComponent,
     ModalComponent,
     FacturacionElectronicaComponent,
-    NavbarComponent
+    NavbarComponent,
+    ReporteComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    NgSelect2Module
+    NgSelect2Module,
+    NgxPaginationModule
   ],
   providers: [],
   bootstrap: [AppComponent]

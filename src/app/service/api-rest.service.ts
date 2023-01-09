@@ -40,4 +40,10 @@ export class ApiRestService {
   public declararGuia(form){
     return this.http.post(this.url+'SPE_DESPATCH/declarar',form,this.httpOptions);
   }
+  public getSpe_despatch(){
+    return this.http.get(this.url+'SPE_DESPATCH/SPE_DESPATCH',this.httpOptions);
+  }
+  public getSpe_despatch_item(serie){
+    return this.http.get(this.url+'SPE_DESPATCH/SPE_DESPATCH_ITEM?serie='+serie,this.httpOptions)
+  }
 }

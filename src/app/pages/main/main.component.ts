@@ -10,6 +10,10 @@ import { Router } from '@angular/router';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent {
+  // variable para formulario crud destinatario select tipo doc
+  tipodocForm='01';
+  //-------------------------------------------------------------
+  pageProduct=0;
   vmotivo = '';
   vmodalidad = '01';
   fecha_emision = this.fechaActual();
@@ -22,7 +26,7 @@ export class MainComponent {
   medida = 'KGM';
   motivos = [];
   destinatarios = [];
-  transportista = [];
+  transportistas = [];
   chofer = [];
   destino = [];
   origen = [];
@@ -37,10 +41,8 @@ export class MainComponent {
   contador = 0;
   //select destino------------------------------------------
   vdestino = '';
-  destinoArray = [];
   //select origen-------------------------------------------
   vorigen = '';
-  origenArray = []
   //producto modal------------------------------------------
   descripcion = '';
   //Guia de remision----------------------------------------
@@ -58,7 +60,6 @@ export class MainComponent {
   correoDestinatario = '';
   numeroDocDestinatario = '';
   tipodocumentoadquiriente = '';
-  motivoArray = [];
   pesoBruto = '';
   medidaGRE = 'KGM';
   modalidadTraslado = '';
@@ -69,21 +70,20 @@ export class MainComponent {
   numeroDocumentoConductor: '';
   tipoDocumentoConductor: '';
   Nrobultos = '';
-  constructor(public api: ApiRestService, private modalService: NgbModal,public rout:Router) {
-    console.log()
+  constructor(public api: ApiRestService, private modalService: NgbModal, public rout: Router) {
     this.obtenerInfo();
   }
-
   obtenerInfo() {
+    Swal.showLoading();
     this.api.getInfo().subscribe((res: any) => {
-      this.empresas = res.empresas;
-      this.motivos = res.motivos;
-      this.chofer = res.chofer;
-      this.transportista = res.transportista;
-      this.destinatarios = res.adquiriente;
-      this.destino = res.destino;
-      this.origen = res.origen;
+      Swal.close();
+      this.empresas = res['EMPRESAS'];
+      this.motivos = res['MOTIVOS'];
+      this.chofer = res['CHOFER'];
+      this.transportistas = res['TRANSPORTISTA'];
+      this.destinatarios = res['ADQUIRIENTE'];
     });
+
   }
   fechaActual() {
     const now = new Date();
@@ -91,8 +91,27 @@ export class MainComponent {
     const month = now.getMonth();
     const day = now.getDate();
     const hours = now.getHours() - 5;
-    const isoString = new Date(year, month, day, hours).toISOString().slice(0, -8);
+    const minutes = now.getMinutes();
+    const isoString = new Date(year, month, day, hours, minutes).toISOString().slice(0, -8);
     return (isoString);
+  }
+  validarNumero(event: KeyboardEvent) {
+    if (event.charCode !== 0) {
+      const pattern = /[0-9]/;
+      const inputChar = String.fromCharCode(event.charCode);
+      if (!pattern.test(inputChar)) {
+        event.preventDefault();
+      }
+    }
+  }
+  validarDecimal(event: KeyboardEvent) {
+    if (event.charCode !== 0) {
+      const pattern = /[0-9.,]/;
+      const inputChar = String.fromCharCode(event.charCode);
+      if (!pattern.test(inputChar)) {
+        event.preventDefault();
+      }
+    }
   }
   abrirModal(ModalTemplate) {
     this.modalRef = this.modalService.open(ModalTemplate, { size: 'lg' });
@@ -102,6 +121,7 @@ export class MainComponent {
       return
     }
     if (form.submitted) {
+      Swal.showLoading();
       form.value.destino = this.destinos;
       this.api.crearAdquiriente(form.value).subscribe((res: any) => {
         Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
@@ -117,6 +137,7 @@ export class MainComponent {
       return
     }
     if (form.submitted) {
+      Swal.showLoading();
       this.api.crearTransportista(form.value).subscribe((res: any) => {
         Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
         this.modalRef.close();
@@ -131,6 +152,7 @@ export class MainComponent {
       return
     }
     if (form.submitted) {
+      Swal.showLoading();
       this.api.crearChofer(form.value).subscribe((res: any) => {
         Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
         this.modalRef.close();
@@ -199,23 +221,6 @@ export class MainComponent {
       })
     }
   }
-  DestinoChange(valor) {
-    this.destinoArray = valor.split('-')
-  }
-  medidaChange(valor) {
-    console.log(valor + ' gre')
-    this.medidaGRE = valor;
-  }
-  motivoChange(valor) {
-    this.motivoArray = valor.split('-');
-  }
-  ModalidadChange(valor) {
-    this.vmodalidad = valor;
-    this.modalidadTraslado = valor;
-  }
-  origenChange(valor) {
-    this.origenArray = valor.split('-');
-  }
   seleccionarProducto(codigo, descripcion, unidadmedida, row: number) {
     this.selectedRow = row;
     this.objetoProducto = { codigo: codigo, descripcion: descripcion, unidadmedida: unidadmedida }
@@ -224,6 +229,9 @@ export class MainComponent {
     this.objetoProducto.cantidad = this.cantidad.toString();
     this.objetoProducto.descripcion = this.descripcion != '' ? this.objetoProducto.descripcion + ' ' + this.descripcion : this.objetoProducto.descripcion;
     var found = this.listadoProductoDetalles.find(object => object.codigo == this.objetoProducto.codigo && object.descripcion == this.objetoProducto.descripcion && object.unidadmedida == this.objetoProducto.unidadmedida);
+    if (this.objetoProducto.codigo==null) {
+      return Swal.fire({ icon: 'error', title: 'Seleccione un producto' });
+    }
     if (found) {
       return Swal.fire({ icon: 'error', title: 'El producto ya ha sido insertado' });
     }
@@ -237,12 +245,15 @@ export class MainComponent {
     this.selectedRow = null;
     this.modalService.dismissAll();
   }
-  obtenerProductos() {
+  obtenerProductos(modal) {
     Swal.showLoading();
     this.api.getProductos().subscribe((res: any) => {
       Swal.close();
       if (res && res.length > 0) {
         this.productos = res;
+        this.abrirModal(modal);
+      }else {
+        return Swal.fire({icon:'warning',title:'No se encontro ningun producto'})
       }
     }, error => {
       Swal.fire({ icon: 'error', title: 'Hubo un error en la conexión' });
@@ -254,29 +265,66 @@ export class MainComponent {
     this.listadoProductoDetalles.splice(indice, 1);
   }
   declararGuia() {
+    if (this.serieNumero == '') {
+      return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'El campo serie y numero esta vacio!' });
+    }
+    if (this.empresa == '') {
+      return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'Seleccione una empresa!' });
+    }
+    if (this.destinatario_input == '') {
+      return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'Seleccione un destinatario!' });
+    }
+    if (this.vdestino == '') {
+      return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'Seleccione un destino!' });
+    }
+    if (this.vorigen == '') {
+      return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'Seleccione un origen!' });
+    }
+    if (this.vmotivo == '') {
+      return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'Seleccione un motivo!' });
+    }
+    if (this.medida == '') {
+      return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'Seleccione una medida!' });
+    }
+    if (this.pesoBruto == '') {
+      return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'El campo peso bruto es requerido!' });
+    }
+    if (this.transportista_input == '' && this.vmodalidad=='01') {
+      return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'Seleccione un transportista!' });
+    }
+    if (this.chofer_input == '' && this.vmodalidad=='02') {
+      return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'Seleccione un chofer!' });
+    }
+    if (this.Nrobultos != '' && Number.isNaN(this.Nrobultos)) {
+      return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'El campo N° Bultos debe ser numerico!' });
+    }
+    console.log(Number.isNaN(this.Nrobultos));
+    if(this.listadoProductoDetalles.length==0){
+      return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'Esta guia no tiene Detalles!' });
+    }
+
     var obj = this.llenarGuia();
+    Swal.showLoading();
     this.api.declararGuia(obj).subscribe((res: any) => {
-      Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
-      setTimeout(() => {
+      Swal.fire({ icon: 'success', title: 'Se creó con éxito' }).then(res=>{
         window.location.reload();
-      }, 2000);
-    }, error => {
-      Swal.fire({ icon: 'error', title: 'Hubo un error en crear el registro' })
+      })
+    }, err => {
+      if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+      else { Swal.fire({ icon: 'warning', text: 'Hubo un error al crear el registro' }); }
     })
   }
-  limpiarPantalla(){
-
-    /* this.serieNumero='';
-    this.fecha_emision=this.fechaActual();
-    this.observaciones=''; */
+  limpiarPantalla() {
   }
   llenarGuia() {
-
     var arrayRem = this.empresaid.split('-');
     var tipoDocRem = arrayRem[1];
     var numeroDocRem = arrayRem[0];
     var razonsocialemisorRem = arrayRem[2];
-    var obj = {
+    var motivo=this.vmotivo.split('-');
+    var destino = this.vdestino.split('-');
+    var origen = this.vorigen.split('-');
+        var obj = {
       tipoDocumentoRemitente: tipoDocRem,
       numeroDocumentoRemitente: numeroDocRem,
       serieNumeroGuia: this.serieNumero,
@@ -301,10 +349,10 @@ export class MainComponent {
       numeroDocumentoEstablecimiento: '',
       tipoDocumentoEstablecimiento: '',
       razonSocialEstablecimiento: '',
-      motivoTraslado: this.motivoArray[0],
-      descripcionMotivoTraslado: this.motivoArray[1],
+      motivoTraslado: motivo[0],
+      descripcionMotivoTraslado: motivo[1],
       indTransbordoProgramado: '',
-      pesoBrutoTotalBienes: this.pesoBruto,
+      pesoBrutoTotalBienes: parseFloat(this.pesoBruto).toString(),
       unidadMedidaPesoBruto: this.medidaGRE,
       modalidadTraslado: this.modalidadTraslado, //01 publico 02 privado
       fechaInicioTraslado: this.fecha_traslado,
@@ -316,10 +364,10 @@ export class MainComponent {
       numeroPlacaVehiculoPrin: this.placaChofer, //conductor chofer
       numeroBultos: this.Nrobultos,
       numeroContenedor1: '',
-      ubigeoPtoLLegada: this.destinoArray[1], //destino
-      direccionPtoLLegada: this.destinoArray[2], //destino
-      ubigeoPtoPartida: this.origenArray[1], //origen
-      direccionPtoPartida: this.origenArray[2], //origen
+      ubigeoPtoLLegada: destino[1], //destino
+      direccionPtoLLegada: destino[2], //destino
+      ubigeoPtoPartida: origen[1], //origen
+      direccionPtoPartida: origen[2], //origen
       codigoPuerto: '',
       idEntrega: '',
       horaEmisionGuia: this.horaEmision, //solo hora!! hh:mm:ss

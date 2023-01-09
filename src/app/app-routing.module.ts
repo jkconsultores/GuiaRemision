@@ -1,3 +1,4 @@
+import { ReporteComponent } from './pages/reporte/reporte.component';
 import { FacturacionElectronicaComponent } from './pages/facturacion-electronica/facturacion-electronica.component';
 import { AuthGuard } from './auth/auth.guard';
 import { LoginComponent } from './pages/login/login.component';
@@ -10,6 +11,7 @@ const routes: Routes = [
   {path:'',component:MainComponent,canActivate:[AuthGuard]},
   {path:'login',component:LoginComponent},
   {path:'facturacion',component:FacturacionElectronicaComponent,canActivate:[AuthGuard]},
+  {path:'reporte',component:ReporteComponent,canActivate:[AuthGuard]},
 ];
 
 @NgModule({
