@@ -10,11 +10,17 @@
           <label>EMPRESA <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-2">
-          <select class="form-select" (ngModelChange)="empresaChange($event)" aria-label=".form-select-sm example" [(ngModel)]="empresa">
-            <option value="">Seleccione una empresa</option>
-            <option value="{{item.id}}" *ngFor="let item of empresas">{{item.text}}</option>
+          <div class="input-group mb-1">
+            <select class="form-select" (ngModelChange)="empresaChange($event)" aria-label=".form-select-sm example"
+              [(ngModel)]="empresa">
+              <option value="">Seleccione una empresa</option>
+              <option value="{{item.id}}" *ngFor="let item of empresas">{{item.text}}</option>
             </select>
-         </div>
+            <div class="input-group-append">
+              <button class="input-group-text" (click)="listarEmpresas(Empresa)">...</button>
+            </div>
+          </div>
+        </div>
         <div class="col-2">
           <label style="width: 150px;">FECHA EMISION</label>
         </div>
@@ -33,14 +39,18 @@
           <label style="width: 150px;">SERIE Y NUMERO <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-2">
-          <input type="text"  class="form-control" [(ngModel)]="serieNumero">
+         <!--  <input type="text" class="form-control" maxlength="13" [(ngModel)]="serieNumero"> -->
+          <select [(ngModel)]="serieNumero" class="form-select">
+            <option value="">Seleccione una serie</option>
+            <option value="{{item.SERIE}}" *ngFor="let item of arraySerie">{{item.SERIE}}</option>
+          </select>
         </div>
         <div class="col-2">
           <label style="width: 150px;">DESTINATARIO <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-6">
           <div class="input-group mb-1">
-            <input type="text" class="form-control" name="destinatario_input" [(ngModel)]="destinatario_input">
+            <input type="text" class="form-control" readonly name="destinatario_input" [(ngModel)]="destinatario_input">
             <div class="input-group-append">
               <button class="input-group-text" (click)="abrirModal(Destinatario)">...</button>
             </div>
@@ -52,7 +62,7 @@
           <label style="width: 150px;">MODALIDAD <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-2">
-         <select class="form-select " aria-label=".form-select-sm example" [(ngModel)]="vmodalidad">
+          <select class="form-select " aria-label=".form-select-sm example" [(ngModel)]="vmodalidad">
             <option value="{{item.id}}" *ngFor="let item of modalidad">{{item.text}}</option>
           </select>
         </div>
@@ -81,12 +91,17 @@
           <label style="width: 150px;">ORIGEN <b style="color: red;">(*)</b></label>
         </div>
         <div class="col-6">
-          <!-- <ng-select2 [data]="origen" (ngModelChange)="origenChange($event)" width="680" [(ngModel)]="vorigen"></ng-select2> -->
-          <select class="form-select " aria-label=".form-select-sm example" [(ngModel)]="vorigen">
-            <option value="">Seleccione un origen</option>
-            <option value="{{item.id}}" *ngFor="let item of origen">{{item.text}}</option>
-          </select>
+          <div class="input-group mb-1">
+            <select class="form-select " aria-label=".form-select-sm example" [(ngModel)]="vorigen">
+              <option value="">Seleccione un origen</option>
+              <option value="{{item.id}}" *ngFor="let item of origen">{{item.text}}</option>
+            </select>
+            <div class="input-group-append">
+              <button class="input-group-text" (click)="listarOrigen(Origen)">...</button>
+            </div>
+          </div>
         </div>
+
       </div>
       <div class="mb-1 row">
         <div class="col-2">
@@ -106,14 +121,8 @@
           <label style="width: 150px;">NRO BULTOS</label>
         </div>
         <div class="col-2">
-          <input type="text" class="form-control" (keypress)="validarNumero($event)" [(ngModel)]="Nrobultos" >
+          <input type="text" class="form-control" (keypress)="validarNumero($event)" [(ngModel)]="Nrobultos">
         </div>
-    <!--     <div class="col-1">
-          <label style="width: 150px;">ESTADO</label>
-        </div>
-        <div class="col-2">
-          <input type="text" class="form-control">
-        </div> -->
       </div>
       <div class="mb-1 row">
         <div class="col-2">
@@ -130,7 +139,7 @@
         </div>
         <div class="col-2 " *ngIf="vmodalidad!='02'">
           <div class="input-group mb-1">
-            <input type="text" class="form-control"  [(ngModel)]="transportista_input">
+            <input type="text" class="form-control" [(ngModel)]="transportista_input">
             <div class="input-group-append">
               <button class="input-group-text" (click)="abrirModal(Transportista)">...</button>
             </div>
@@ -147,10 +156,10 @@
             </div>
           </div>
         </div>
-        <div class="col-1"  *ngIf="vmodalidad!='01'">
+        <div class="col-1" *ngIf="vmodalidad!='01'">
           <label style="width: 150px;">PLACA</label>
         </div>
-        <div class="col-2 "  *ngIf="vmodalidad!='01'">
+        <div class="col-2 " *ngIf="vmodalidad!='01'">
           <input type="text" [(ngModel)]="placaChofer" class="form-control">
         </div>
       </div>
@@ -174,7 +183,8 @@
                   <td>{{item.descripcion}}</td>
                   <td>{{item.cantidad}}</td>
                   <td>{{item.unidadmedida}}</td>
-                  <td><i class="fa-solid fa-trash" style="color: red;cursor: pointer;" (click)="borrarListadoProductoDetalles(item.codigo,item.descripcion,item.cantidad,item.unidadmedida)"></i>
+                  <td><i class="fa-solid fa-trash" style="color: red;cursor: pointer;"
+                      (click)="borrarListadoProductoDetalles(item.codigo,item.descripcion,item.cantidad,item.unidadmedida)"></i>
                   </td>
                 </tr>
               </tbody>
@@ -182,10 +192,12 @@
           </div>
         </div>
         <div class="col-2">
-          <button class="btn btn-light mb-1" (click)="obtenerProductos(Producto);" style="width: 200px;height: 80px;">Agregar Detalle</button>
+          <button class="btn btn-light mb-1" (click)="obtenerProductos(Producto);"
+            style="width: 200px;height: 80px;">Agregar Detalle</button>
         </div>
         <div class="col-2">
-          <button class="btn btn-primary mb-1" style="width: 200px;height: 80px;" (click)="declararGuia()">Declarar</button>
+          <button class="btn btn-primary mb-1" style="width: 200px;height: 80px;"
+            (click)="declararGuia()">Declarar</button>
         </div>
       </div>
     </div>
@@ -218,14 +230,25 @@
               <th scope="col">Tipo Doc</th>
               <th scope="col">Razon social</th>
               <th scope="col">Direccion</th>
+              <th scope="col">Edit</th>
             </tr>
           </thead>
           <tbody>
-            <tr (click)="asignarDestinatario(item.RAZONSOCIALADQUIRIENTE,item.NUMERODOCUMENTOADQUIRIENTE,item.CORREO,item.TIPODOCUMENTOADQUIRIENTE)" *ngFor="let item of destinatarios" style="cursor: pointer;">
-              <th scope="row">{{item.NUMERODOCUMENTOADQUIRIENTE}}</th>
-              <td>{{item.TIPODOCUMENTOADQUIRIENTE}}</td>
-              <td>{{item.RAZONSOCIALADQUIRIENTE}}</td>
-              <td>{{item.DIRECCIONADQUIRIENTE}}</td>
+            <tr *ngFor="let item of destinatarios">
+              <th scope="row" style="cursor: pointer;"
+                (click)="asignarDestinatario(item.RAZONSOCIALADQUIRIENTE,item.NUMERODOCUMENTOADQUIRIENTE,item.CORREO,item.TIPODOCUMENTOADQUIRIENTE)">
+                {{item.NUMERODOCUMENTOADQUIRIENTE}}</th>
+              <td style="cursor: pointer;"
+                (click)="asignarDestinatario(item.RAZONSOCIALADQUIRIENTE,item.NUMERODOCUMENTOADQUIRIENTE,item.CORREO,item.TIPODOCUMENTOADQUIRIENTE)">
+                {{item.TIPODOCUMENTOADQUIRIENTE}}</td>
+              <td style="cursor: pointer;"
+                (click)="asignarDestinatario(item.RAZONSOCIALADQUIRIENTE,item.NUMERODOCUMENTOADQUIRIENTE,item.CORREO,item.TIPODOCUMENTOADQUIRIENTE)">
+                {{item.RAZONSOCIALADQUIRIENTE}}</td>
+              <td style="cursor: pointer;"
+                (click)="asignarDestinatario(item.RAZONSOCIALADQUIRIENTE,item.NUMERODOCUMENTOADQUIRIENTE,item.CORREO,item.TIPODOCUMENTOADQUIRIENTE)">
+                {{item.DIRECCIONADQUIRIENTE}}</td>
+              <td style="text-align: center;cursor: pointer;" (click)="EditarDestinatario(UpdateDestinatario,item)"><i
+                  class="fa-solid fa-user-pen" style="font-size: 20px;color: rgb(25, 0, 255);"></i></td>
             </tr>
           </tbody>
         </table>
@@ -263,7 +286,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr (click)="asignarTransportista(item.NUMERODOCUMENTOTRANSPORTISTA,item.RAZONSOCIALTRANSPORTISTA,item.TIPODOCUMENTOTRANSPORTISTA,item.NUMEROREGISTROMTC)" *ngFor="let item of transportistas" style="cursor: pointer;">
+            <tr
+              (click)="asignarTransportista(item.NUMERODOCUMENTOTRANSPORTISTA,item.RAZONSOCIALTRANSPORTISTA,item.TIPODOCUMENTOTRANSPORTISTA,item.NUMEROREGISTROMTC)"
+              *ngFor="let item of transportistas" style="cursor: pointer;">
               <th scope="row">{{item.NUMERODOCUMENTOTRANSPORTISTA}}</th>
               <td>{{item.TIPODOCUMENTOTRANSPORTISTA}}</td>
               <td>{{item.RAZONSOCIALTRANSPORTISTA}}</td>
@@ -306,8 +331,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr (click)="asignarChofer(item.NUMERODOCUMENTOCHOFER,item.NOMBRE,item.APELLIDO,item.PLACAVEHICULO,item.TIPODOCUMENTOCHOFER,item.BREVETE)" *ngFor="let item of chofer "
-            style="cursor: pointer;" >
+            <tr
+              (click)="asignarChofer(item.NUMERODOCUMENTOCHOFER,item.NOMBRE,item.APELLIDO,item.PLACAVEHICULO,item.TIPODOCUMENTOCHOFER,item.BREVETE)"
+              *ngFor="let item of chofer " style="cursor: pointer;">
               <th scope="row">{{item.NUMERODOCUMENTOCHOFER}}</th>
               <td>{{item.TIPODOCUMENTOCHOFER}}</td>
               <td>{{item.NOMBRE+" "+item.APELLIDO}}</td>
@@ -330,22 +356,20 @@
         <div class="form-group row">
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a> N°
             Doc:</label>
-          <div class="col-sm-9">
+          <div class="col-sm-3">
             <input type="text" ngModel class="form-control"
               [ngClass]="{'is-invalid': f.submitted&&f.controls['NUMERODOCUMENTOADQUIRIENTE'].errors}"
               name="NUMERODOCUMENTOADQUIRIENTE" placeholder="Ingrese el numero de documento adquiriente" required>
           </div>
-        </div>
-        <div class="form-group row">
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a> Tipo
             Doc:</label>
-          <div class="col-sm-9">
-              <select ngModel [(ngModel)]="tipodocForm" class="form-select" name="TIPODOCUMENTOADQUIRIENTE"  required>
+          <div class="col-sm-3">
+            <select ngModel [(ngModel)]="tipodocForm" class="form-select" name="TIPODOCUMENTOADQUIRIENTE" required>
               <option value="01">DNI</option>
               <option value="04">CARNET DE EXTRANJERIA</option>
               <option value="06">RUC</option>
               <option value="07">PASAPORTE</option>
-              </select>
+            </select>
           </div>
         </div>
         <div class="form-group row">
@@ -361,8 +385,8 @@
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"> Correo:</label>
           <div class="col-sm-9">
             <input type="text" ngModel class="form-control"
-              [ngClass]="{'is-invalid': f.submitted&&f.controls['CORREO'].errors}"
-              name="CORREO" placeholder="Ingrese el correo">
+              [ngClass]="{'is-invalid': f.submitted&&f.controls['CORREO'].errors}" name="CORREO"
+              placeholder="Ingrese el correo">
           </div>
         </div>
         <div class="form-group row">
@@ -377,44 +401,40 @@
         <div class="form-group row">
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
             Ubigeo:</label>
-          <div class="col-sm-9">
+          <div class="col-sm-3">
             <input type="text" ngModel class="form-control"
               [ngClass]="{'is-invalid': f.submitted&&f.controls['UBIGEOADQUIRIENTE'].errors}" name="UBIGEOADQUIRIENTE"
               placeholder="Ingrese el ubigeo" required>
           </div>
-        </div>
-        <div class="form-group row">
-          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;">
             Distrito:</label>
-          <div class="col-sm-9">
+          <div class="col-sm-3">
             <input type="text" ngModel class="form-control"
               [ngClass]="{'is-invalid': f.submitted&&f.controls['DISTRITOADQUIRIENTE'].errors}"
-              name="DISTRITOADQUIRIENTE" placeholder="Ingrese el distrito" required>
+              name="DISTRITOADQUIRIENTE" placeholder="Ingrese el distrito">
           </div>
         </div>
         <div class="form-group row">
-          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;">
             Provincia:</label>
-          <div class="col-sm-9">
+          <div class="col-sm-3">
             <input type="text" ngModel class="form-control"
               [ngClass]="{'is-invalid': f.submitted&&f.controls['PROVINCIAADQUIRIENTE'].errors}"
-              name="PROVINCIAADQUIRIENTE" placeholder="Ingrese la provincia" required>
+              name="PROVINCIAADQUIRIENTE" placeholder="Ingrese la provincia">
           </div>
-        </div>
-        <div class="form-group row">
-          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;">
             Departamento:</label>
-          <div class="col-sm-9">
+          <div class="col-sm-3">
             <input type="text" ngModel class="form-control"
               [ngClass]="{'is-invalid': f.submitted&&f.controls['DEPARTAMENTOADQUIRIENTE'].errors}"
-              name="DEPARTAMENTOADQUIRIENTE" placeholder="Ingrese el departamento" required>
+              name="DEPARTAMENTOADQUIRIENTE" placeholder="Ingrese el departamento">
           </div>
         </div>
-        <div class="form-group row">
+        <div class="form-group row" hidden>
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
             Pais:</label>
           <div class="col-sm-9">
-            <input type="text" ngModel class="form-control"
+            <input type="text" readonly ngModel class="form-control" [(ngModel)]="pais"
               [ngClass]="{'is-invalid': f.submitted&&f.controls['PAISADQUIRIENTE'].errors}" name="PAISADQUIRIENTE"
               placeholder="Ingrese el Pais" required>
           </div>
@@ -439,7 +459,7 @@
 
       <button class="btn btn-success" (click)="crearFilas()">Agregar Destino</button>
       <div class="table table-responsive" *ngIf="destinos.length!=0" style="max-height: 200px;">
-        <table class="table table-bordered" >
+        <table class="table table-bordered">
           <thead>
             <tr>
               <th scope="col">Ubigeo</th>
@@ -451,7 +471,8 @@
             <tr *ngFor="let item of destinos">
               <th scope="row">{{item.ubigeodestino}}</th>
               <td>{{item.direcciondestino}}</td>
-              <td><i class="fa-solid fa-trash" style="color: red;cursor: pointer;" (click)="borrarDestinoArray(item.id)"></i></td>
+              <td><i class="fa-solid fa-trash" style="color: red;cursor: pointer;"
+                  (click)="borrarDestinoArray(item.id)"></i></td>
             </tr>
           </tbody>
         </table>
@@ -485,9 +506,12 @@
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a> Tipo
             Doc:</label>
           <div class="col-sm-9">
-            <input type="text" ngModel class="form-control"
-              [ngClass]="{'is-invalid': Transportista.submitted&&Transportista.controls['TIPODOCUMENTOTRANSPORTISTA'].errors}"
-              name="TIPODOCUMENTOTRANSPORTISTA" placeholder="Ingrese el tipo de documento" required>
+            <select ngModel [(ngModel)]="tipodocTrans" class="form-select" name="TIPODOCUMENTOTRANSPORTISTA" required>
+              <option value="01">DNI</option>
+              <option value="04">CARNET DE EXTRANJERIA</option>
+              <option value="06">RUC</option>
+              <option value="07">PASAPORTE</option>
+            </select>
           </div>
         </div>
         <div class="form-group row">
@@ -538,9 +562,12 @@
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a> Tipo
             Doc:</label>
           <div class="col-sm-9">
-            <input type="text" ngModel class="form-control"
-              [ngClass]="{'is-invalid': chofer.submitted&&chofer.controls['TIPODOCUMENTOCHOFER'].errors}"
-              name="TIPODOCUMENTOCHOFER" placeholder="Ingrese el tipo de documento" required>
+            <select ngModel [(ngModel)]="tipodocChofer" class="form-select" name="TIPODOCUMENTOCHOFER" required>
+              <option value="01">DNI</option>
+              <option value="04">CARNET DE EXTRANJERIA</option>
+              <option value="06">RUC</option>
+              <option value="07">PASAPORTE</option>
+            </select>
           </div>
         </div>
         <div class="form-group row">
@@ -600,13 +627,12 @@
           <label style="width: 100px;margin-top: 3px;margin-left: 30px;">Producto:</label>
         </div>
         <div class="col-5">
-          <input type="text" class="form-control mb-1">
-    <!--       <div class="input-group mb-1">
+          <div class="input-group mb-1">
             <input type="text" class="form-control">
             <div class="input-group-append">
-              <button class="input-group-text">+</button>
+              <button class="input-group-text" (click)="abrirModal(CrudProducto)">+</button>
             </div>
-          </div> -->
+          </div>
         </div>
 
       </div>
@@ -614,66 +640,321 @@
         <table class="table table-bordered table-hover">
           <thead>
             <tr>
-              <th scope="col">ID</th>
               <th scope="col">CODIGO</th>
               <th scope="col">PRODUCTO</th>
               <th scope="col">UNIDAD</th>
+              <th scope="col">OPT</th>
             </tr>
           </thead>
           <tbody>
-            <tr (click)="seleccionarProducto(item.codigo,item.descripcion,item.unidadmedida,i)" *ngFor="let item of productos| paginate: {id:'pasistencia', itemsPerPage: 10, currentPage: pageProduct } ; let i = index " style="cursor: pointer;"
-            [ngClass]="{'selected-row': i === selectedRow}">
-              <th scope="row">{{item.id}}</th>
+            <tr (click)="seleccionarProducto(item.codigo,item.descripcion,item.unidadmedida,i)"
+              *ngFor="let item of productos| paginate: {id:'pasistencia', itemsPerPage: 10, currentPage: pageProduct } ; let i = index "
+              style="cursor: pointer;" [ngClass]="{'selected-row': i === selectedRow}">
               <td>{{item.codigo}}</td>
               <td>{{item.descripcion}}</td>
               <td>{{item.unidadmedida}}</td>
+              <td style="text-align: center;cursor: pointer;" (click)="borrarProducto(item.codigo);"><i
+                  class="fa-solid fa-trash" style="font-size: 20px;color: rgb(255, 0, 0);"></i></td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div style="text-align: center;"><pagination-controls id="pasistencia" (pageChange)="pageProduct = $event"></pagination-controls></div>
-        <div class="row">
-          <div class="col-2">
-            <label style="width: 100px;margin-top: 3px;">Descripción:</label>
-          </div>
-          <div class="col-6">
-            <textarea class="form-control" rows="3" [(ngModel)]="descripcion"></textarea>
-          </div>
-          <div class="col-2">
-            <label style="width: 100px;margin-top: 3px;margin-left: 30px;margin-bottom: 35px;">Cantidad:</label>
-            <button class="btn btn-danger" (click)="salirProducto()" style="width: 100px;">Salir</button>
-          </div>
-          <div class="col-2">
-           <input type="number" class="form-control" [(ngModel)]="cantidad" (keypress)="validarDecimal($event)"><br>
-           <button class="btn btn-primary" (click)="asignarProducto()" style="width: 100px;">Asignar</button>
-          </div>
+      <div style="text-align: center;"><pagination-controls id="pasistencia"
+          (pageChange)="pageProduct = $event"></pagination-controls></div>
+      <div class="row">
+        <div class="col-2">
+          <label style="width: 100px;margin-top: 3px;">Descripción:</label>
         </div>
+        <div class="col-6">
+          <textarea class="form-control" rows="3" [(ngModel)]="descripcion"></textarea>
+        </div>
+        <div class="col-2">
+          <label style="width: 100px;margin-top: 3px;margin-left: 30px;margin-bottom: 35px;">Cantidad:</label>
+          <button class="btn btn-danger" (click)="salirProducto()" style="width: 100px;">Salir</button>
+        </div>
+        <div class="col-2">
+          <input type="number" class="form-control" [(ngModel)]="cantidad" (keypress)="validarDecimal($event)"><br>
+          <button class="btn btn-primary" (click)="asignarProducto()" style="width: 100px;">Asignar</button>
+        </div>
+      </div>
     </div>
   </div>
 </ng-template>
-<!-- <ng-template #CrudProducto>
+<ng-template #UpdateDestinatario>
   <div class="card">
     <div class="card-header">
-      <h4>Registrar Chofer</h4>
+      <h5>Update Destinatario</h5>
     </div>
     <div class="card-body">
-      <form (ngSubmit)="crearChofer(chofer)" #chofer="ngForm" id="chofer">
+      <form (ngSubmit)="updateAdquiriente(f)" #f="ngForm" id="destinatario">
         <div class="form-group row">
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a> N°
             Doc:</label>
-          <div class="col-sm-9">
-            <input type="text" ngModel class="form-control"
-              [ngClass]="{'is-invalid': chofer.submitted&&chofer.controls['NUMERODOCUMENTOCHOFER'].errors}"
-              name="NUMERODOCUMENTOCHOFER" placeholder="Ingrese el numero de documento" required>
+          <div class="col-sm-3">
+            <input type="text" ngModel [(ngModel)]="destinatarioObject.NUMERODOCUMENTOADQUIRIENTE" class="form-control"
+              [ngClass]="{'is-invalid': f.submitted&&f.controls['NUMERODOCUMENTOADQUIRIENTE'].errors}"
+              name="NUMERODOCUMENTOADQUIRIENTE" placeholder="Ingrese el numero de documento adquiriente" required>
+          </div>
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a> Tipo
+            Doc:</label>
+          <div class="col-sm-3">
+            <select ngModel [(ngModel)]="destinatarioObject.TIPODOCUMENTOADQUIRIENTE" class="form-select"
+              name="TIPODOCUMENTOADQUIRIENTE" required>
+              <option value="01">DNI</option>
+              <option value="04">CARNET DE EXTRANJERIA</option>
+              <option value="06">RUC</option>
+              <option value="07">PASAPORTE</option>
+            </select>
           </div>
         </div>
         <div class="form-group row">
-          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a> Tipo
-            Doc:</label>
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a> Razon
+            Social:</label>
+          <div class="col-sm-9">
+            <input type="text" ngModel [(ngModel)]="destinatarioObject.RAZONSOCIALADQUIRIENTE" class="form-control"
+              [ngClass]="{'is-invalid': f.submitted&&f.controls['RAZONSOCIALADQUIRIENTE'].errors}"
+              name="RAZONSOCIALADQUIRIENTE" placeholder="Ingrese la razón social" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"> Correo:</label>
+          <div class="col-sm-9">
+            <input type="text" ngModel [(ngModel)]="destinatarioObject.CORREO" class="form-control"
+              [ngClass]="{'is-invalid': f.submitted&&f.controls['CORREO'].errors}" name="CORREO"
+              placeholder="Ingrese el correo">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Dirección:</label>
+          <div class="col-sm-9">
+            <input type="text" ngModel [(ngModel)]="destinatarioObject.DIRECCIONADQUIRIENTE" class="form-control"
+              [ngClass]="{'is-invalid': f.submitted&&f.controls['DIRECCIONADQUIRIENTE'].errors}"
+              name="DIRECCIONADQUIRIENTE" placeholder="Ingrese la dirección" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Ubigeo:</label>
+          <div class="col-sm-3">
+            <input type="text" ngModel [(ngModel)]="destinatarioObject.UBIGEOADQUIRIENTE" class="form-control"
+              [ngClass]="{'is-invalid': f.submitted&&f.controls['UBIGEOADQUIRIENTE'].errors}" name="UBIGEOADQUIRIENTE"
+              placeholder="Ingrese el ubigeo" required>
+          </div>
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;">
+            Distrito:</label>
+          <div class="col-sm-3">
+            <input type="text" ngModel [(ngModel)]="destinatarioObject.DISTRITOADQUIRIENTE" class="form-control"
+              [ngClass]="{'is-invalid': f.submitted&&f.controls['DISTRITOADQUIRIENTE'].errors}"
+              name="DISTRITOADQUIRIENTE" placeholder="Ingrese el distrito">
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;">
+            Provincia:</label>
+          <div class="col-sm-3">
+            <input type="text" ngModel [(ngModel)]="destinatarioObject.PROVINCIAADQUIRIENTE" class="form-control"
+              [ngClass]="{'is-invalid': f.submitted&&f.controls['PROVINCIAADQUIRIENTE'].errors}"
+              name="PROVINCIAADQUIRIENTE" placeholder="Ingrese la provincia">
+          </div>
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;">
+            Departamento:</label>
+          <div class="col-sm-3">
+            <input type="text" ngModel [(ngModel)]="destinatarioObject.DEPARTAMENTOADQUIRIENTE" class="form-control"
+              [ngClass]="{'is-invalid': f.submitted&&f.controls['DEPARTAMENTOADQUIRIENTE'].errors}"
+              name="DEPARTAMENTOADQUIRIENTE" placeholder="Ingrese el departamento">
+          </div>
+        </div>
+        <div class="form-group row" hidden>
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Pais:</label>
+          <div class="col-sm-9">
+            <input type="text" readonly ngModel [(ngModel)]="pais" class="form-control" [(ngModel)]="pais"
+              [ngClass]="{'is-invalid': f.submitted&&f.controls['PAISADQUIRIENTE'].errors}" name="PAISADQUIRIENTE"
+              placeholder="Ingrese el Pais">
+          </div>
+        </div>
+        <hr>
+        <span><b>Destino</b></span>
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Ubigeo:</label>
+          <div class="col-sm-9">
+            <input type="text" [(ngModel)]="ubigeoDestinoUpdate" name="ubigeodestinoupdate" class="form-control">
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Dirección:</label>
+          <div class="col-sm-9">
+            <input type="text" [(ngModel)]="direccionDestinoUpdate" name="direccionDestinoUpdate" class="form-control">
+          </div>
+        </div>
+      </form>
+
+      <button class="btn btn-success" (click)="crearFilasUpdate()">Agregar Destino</button>
+      <div class="table table-responsive" *ngIf="destinatarioObject.DESTINO.length!=0" style="max-height: 200px;">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">Ubigeo</th>
+              <th scope="col">Dirección</th>
+              <th scope="col">opt</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of destinatarioObject.DESTINO">
+              <th scope="row">{{item.UBIGEODESTINO}}</th>
+              <td>{{item.DIRECCIONDESTINO}}</td>
+              <td><i class="fa-solid fa-trash" style="color: red;cursor: pointer;"
+                  (click)="borrarDestinoArrayUpdate(item.id)"></i></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="row mt-5">
+        <div style="text-align: right;">
+          <button class="btn btn-danger" style="width: 80px;margin-right: 5px;" (click)='salir()'>Salir</button>
+          <button class="btn btn-success" style="width: 90px;" form="destinatario" type="submit">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #CrudProducto>
+  <div class="card">
+    <div class="card-header">
+      <h5>Crear Producto</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="crearProducto(producto)" #producto="ngForm" id="producto">
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Codigo:</label>
           <div class="col-sm-9">
             <input type="text" ngModel class="form-control"
-              [ngClass]="{'is-invalid': chofer.submitted&&chofer.controls['TIPODOCUMENTOCHOFER'].errors}"
-              name="TIPODOCUMENTOCHOFER" placeholder="Ingrese el tipo de documento" required>
+              [ngClass]="{'is-invalid': producto.submitted&&producto.controls['CODIGO'].errors}" name="CODIGO"
+              placeholder="Ingrese el codigo" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Producto:</label>
+          <div class="col-sm-9">
+            <input type="text" ngModel class="form-control"
+              [ngClass]="{'is-invalid': producto.submitted&&producto.controls['DESCRIPCION'].errors}" name="DESCRIPCION"
+              placeholder="Ingrese el nombre del producto" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Producto:</label>
+          <div class="col-sm-9">
+            <select class="form-select" ngModel name="UNIDADMEDIDA"
+              [ngClass]="{'is-invalid': producto.submitted&&producto.controls['UNIDADMEDIDA'].errors}"
+              aria-label=".form-select-sm example" [(ngModel)]="medidaProductoCrud" required>
+              <option value="" selected>Seleccionar</option>
+              <option value="{{item.id}}" *ngFor="let item of medidas">{{item.text}}</option>
+            </select>
+          </div>
+        </div>
+
+      </form>
+      <div class="row mt-2">
+        <div style="text-align: right;">
+          <button class="btn btn-danger" style="width: 80px;margin-right: 5px;" (click)='salir()'>Salir</button>
+          <button class="btn btn-success" style="width: 90px;" form="producto" type="submit">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #Empresa>
+  <div class="card">
+    <div class="card-header text-center">
+      <h5>EMPRESA</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-3">
+          <label style="width: 150px;">EMPRESA</label>
+        </div>
+        <div class="col-9">
+          <div class="input-group mb-1">
+            <input type="text" class="form-control">
+            <div class="input-group-append">
+              <button class="input-group-text" (click)="abrirModal(CrudEmpresa)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive" style="height: 400px;">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th scope="col">N° Doc Emisor</th>
+              <th scope="col">Codigo Local Anexo</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Tipo Doc</th>
+              <th scope="col">Razon social</th>
+              <th scope="col">Ubigeo</th>
+              <th scope="col">Dirección</th>
+              <th scope="col">Distrito</th>
+              <th scope="col">Provincia</th>
+              <th scope="col">Departamento</th>
+              <th scope="col">Pais</th>
+              <th scope="col">Razón Comercial</th>
+              <th scope="col">Opt</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of tablaEmpresas">
+              <th scope="row">{{item.numerodocumentoemisor}}</th>
+              <td>{{item.codigolocalanexo}}</td>
+              <td>{{item.nombreempresa}}</td>
+              <td>{{item.tipodocumentoemisor}}</td>
+              <td>{{item.razonsocialemisor}}</td>
+              <td>{{item.ubigeoemisor}}</td>
+              <td>{{item.direccionemisor}}</td>
+              <td>{{item.distritoemisor}}</td>
+              <td>{{item.provinciaemisor}}</td>
+              <td>{{item.departamentoemisor}}</td>
+              <td>{{item.paisemisor}}</td>
+              <td>{{item.razoncomercialemisor}}</td>
+              <td style="text-align: center;cursor: pointer;"
+                (click)="borrarEmpresa(item.numerodocumentoemisor,item.codigolocalanexo);"><i class="fa-solid fa-trash"
+                  style="font-size: 20px;color: rgb(255, 0, 0);"></i></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #CrudEmpresa>
+  <div class="card">
+    <div class="card-header">
+      <h5>Crear Empresa</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="crearEmpresa(empresa)" #empresa="ngForm" id="empresa">
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            N° Documento:</label>
+          <div class="col-sm-9">
+            <input type="text" ngModel class="form-control"
+              [ngClass]="{'is-invalid': empresa.submitted&&empresa.controls['NUMERODOCUMENTOEMISOR'].errors}"
+              name="NUMERODOCUMENTOEMISOR" placeholder="Ingrese el documento" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Codigo Local:</label>
+          <div class="col-sm-9">
+            <input type="text" ngModel class="form-control"
+              [ngClass]="{'is-invalid': empresa.submitted&&empresa.controls['CODIGOLOCALANEXO'].errors}"
+              name="CODIGOLOCALANEXO" placeholder="Ingrese el codigo del local anexo" required>
           </div>
         </div>
         <div class="form-group row">
@@ -681,45 +962,185 @@
             Nombre:</label>
           <div class="col-sm-9">
             <input type="text" ngModel class="form-control"
-              [ngClass]="{'is-invalid': chofer.submitted&&chofer.controls['NOMBRE'].errors}" name="NOMBRE"
-              placeholder="Ingrese el nombre" required>
+              [ngClass]="{'is-invalid': empresa.submitted&&empresa.controls['NOMBREEMPRESA'].errors}"
+              name="NOMBREEMPRESA" placeholder="Ingrese el nombre de la empresa" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a> Tipo
+            Doc:</label>
+          <div class="col-sm-9">
+            <select ngModel [(ngModel)]="tipodocEmp" class="form-select" name="TIPODOCUMENTOEMISOR" required>
+              <option value="01">DNI</option>
+              <option value="04">CARNET DE EXTRANJERIA</option>
+              <option value="06">RUC</option>
+              <option value="07">PASAPORTE</option>
+            </select>
           </div>
         </div>
         <div class="form-group row">
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
-            Apellido:</label>
+            Razón social:</label>
           <div class="col-sm-9">
             <input type="text" ngModel class="form-control"
-              [ngClass]="{'is-invalid': chofer.submitted&&chofer.controls['APELLIDO'].errors}" name="APELLIDO"
-              placeholder="Ingrese la razón social" required>
+              [ngClass]="{'is-invalid': empresa.submitted&&empresa.controls['RAZONSOCIALEMISOR'].errors}"
+              name="RAZONSOCIALEMISOR" placeholder="Ingrese la razón social" required>
           </div>
         </div>
         <div class="form-group row">
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
-            Brevete:</label>
+            Dirección:</label>
           <div class="col-sm-9">
             <input type="text" ngModel class="form-control"
-              [ngClass]="{'is-invalid': chofer.submitted&&chofer.controls['BREVETE'].errors}" name="BREVETE"
-              placeholder="Ingrese el Brevete" required>
+              [ngClass]="{'is-invalid': empresa.submitted&&empresa.controls['DIRECCIONEMISOR'].errors}"
+              name="DIRECCIONEMISOR" placeholder="Ingrese la dirección" required>
           </div>
         </div>
         <div class="form-group row">
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
-            Placa:</label>
+            Ubigeo:</label>
+          <div class="col-sm-3">
+            <input type="text" ngModel class="form-control"
+              [ngClass]="{'is-invalid': empresa.submitted&&empresa.controls['UBIGEOEMISOR'].errors}" name="UBIGEOEMISOR"
+              placeholder="Ingrese el ubigeo" required>
+          </div>
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Distrito:</label>
+          <div class="col-sm-3">
+            <input type="text" ngModel class="form-control"
+              [ngClass]="{'is-invalid': empresa.submitted&&empresa.controls['DISTRITOEMISOR'].errors}"
+              name="DISTRITOEMISOR" placeholder="Ingrese el distrito" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Provincia:</label>
+          <div class="col-sm-3">
+            <input type="text" ngModel class="form-control"
+              [ngClass]="{'is-invalid': empresa.submitted&&empresa.controls['PROVINCIAEMISOR'].errors}"
+              name="PROVINCIAEMISOR" placeholder="Ingrese la provincia" required>
+          </div>
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Departamento:</label>
+          <div class="col-sm-3">
+            <input type="text" ngModel class="form-control"
+              [ngClass]="{'is-invalid': empresa.submitted&&empresa.controls['DEPARTAMENTOEMISOR'].errors}"
+              name="DEPARTAMENTOEMISOR" placeholder="Ingrese el departamento" required>
+          </div>
+        </div>
+        <div class="form-group row" hidden>
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Pais:</label>
+          <div class="col-sm-9">
+            <input type="text" ngModel class="form-control" [(ngModel)]="pais" readonly
+              [ngClass]="{'is-invalid': empresa.submitted&&empresa.controls['PAISEMISOR'].errors}" name="PAISEMISOR"
+              placeholder="Ingrese el pais" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Razón comercial:</label>
           <div class="col-sm-9">
             <input type="text" ngModel class="form-control"
-              [ngClass]="{'is-invalid': chofer.submitted&&chofer.controls['PLACAVEHICULO'].errors}" name="PLACAVEHICULO"
-              placeholder="Ingrese la placa del vehiculo" required>
+              [ngClass]="{'is-invalid': empresa.submitted&&empresa.controls['RAZONCOMERCIALEMISOR'].errors}"
+              name="RAZONCOMERCIALEMISOR" placeholder="Ingrese la razón comercial emisor" required>
           </div>
         </div>
       </form>
       <div class="row mt-2">
         <div style="text-align: right;">
           <button class="btn btn-danger" style="width: 80px;margin-right: 5px;" (click)='salir()'>Salir</button>
-          <button class="btn btn-success" style="width: 90px;" form="chofer" type="submit">Aceptar</button>
+          <button class="btn btn-success" style="width: 90px;" form="empresa" type="submit">Aceptar</button>
         </div>
       </div>
     </div>
   </div>
 </ng-template>
- -->
+<ng-template #CrudOrigen>
+  <div class="card">
+    <div class="card-header">
+      <h5>Crear Origen</h5>
+    </div>
+    <div class="card-body">
+      <form (ngSubmit)="crearOrigen(origen)" #origen="ngForm" id="origen">
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            N° Documento:</label>
+          <div class="col-sm-9">
+            <input type="text" ngModel class="form-control"
+              [ngClass]="{'is-invalid': origen.submitted&&origen.controls['NUMERODOCUMENTOEMISOR'].errors}"
+              name="NUMERODOCUMENTOEMISOR" placeholder="Ingrese el documento" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Ubigeo:</label>
+          <div class="col-sm-9">
+            <input type="text" ngModel class="form-control"
+              [ngClass]="{'is-invalid': origen.submitted&&origen.controls['UBIGEOORIGEN'].errors}" name="UBIGEOORIGEN"
+              placeholder="Ingrese el codigo del local anexo" required>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a>
+            Dirección:</label>
+          <div class="col-sm-9">
+            <input type="text" ngModel class="form-control"
+              [ngClass]="{'is-invalid': origen.submitted&&origen.controls['DIRECCIONORIGEN'].errors}"
+              name="DIRECCIONORIGEN" placeholder="Ingrese la razón social" required>
+          </div>
+        </div>
+      </form>
+      <div class="row mt-2">
+        <div style="text-align: right;">
+          <button class="btn btn-danger" style="width: 80px;margin-right: 5px;" (click)='salir()'>Salir</button>
+          <button class="btn btn-success" style="width: 90px;" form="origen" type="submit">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #Origen>
+  <div class="card">
+    <div class="card-header text-center">
+      <h5>ORIGEN</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-3">
+          <label style="width: 150px;">ORIGEN</label>
+        </div>
+        <div class="col-9">
+          <div class="input-group mb-1">
+            <input type="text" class="form-control">
+            <div class="input-group-append">
+              <button class="input-group-text" (click)="abrirModal(CrudOrigen)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive" style="height: 400px;">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th scope="col">N° Doc Emisor</th>
+              <th scope="col">Ubigeo</th>
+              <th scope="col">Dirección</th>
+              <th scope="col">Opt</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of tablaOrigenes">
+              <th scope="row">{{item.numerodocumentoemisor}}</th>
+              <td>{{item.ubigeoorigen}}</td>
+              <td>{{item.direccionorigen}}</td>
+              <td style="text-align: center;cursor: pointer;"
+                (click)="borrarEmpresa(item.numerodocumentoemisor,item.codigolocalanexo);"><i class="fa-solid fa-trash"
+                  style="font-size: 20px;color: rgb(255, 0, 0);"></i></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,3 +1,4 @@
+import { adquiriente } from './../../interface/adquiriente';
 import { NgForm } from '@angular/forms';
 import { ApiRestService } from './../../service/api-rest.service';
 import { Component } from '@angular/core';
@@ -10,8 +11,18 @@ import { Router } from '@angular/router';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent {
+  pais='PE';
+  tipodocEmp='06';
+  ubigeoDestinoUpdate='';
+  direccionDestinoUpdate='';
+  destinatarioObject:adquiriente;
+  tablaEmpresas=[];
+  tablaOrigenes=[];
+  arraySerie=[];
   // variable para formulario crud destinatario select tipo doc
   tipodocForm='01';
+  tipodocTrans='01';
+  tipodocChofer='01';
   //-------------------------------------------------------------
   pageProduct=0;
   vmotivo = '';
@@ -24,6 +35,7 @@ export class MainComponent {
   modalidad = [{ id: '01', text: 'PUBLICO', }, { id: '02', text: 'PRIVADO' }];
   medidas = [{ id: 'KGM', text: 'KGM' }, { id: 'NIU', text: 'NIU' }]
   medida = 'KGM';
+  medidaProductoCrud='KGM';
   motivos = [];
   destinatarios = [];
   transportistas = [];
@@ -72,6 +84,10 @@ export class MainComponent {
   Nrobultos = '';
   constructor(public api: ApiRestService, private modalService: NgbModal, public rout: Router) {
     this.obtenerInfo();
+  }
+  EditarDestinatario(modal,contenido){
+    this.destinatarioObject=contenido;
+    this.abrirModal(modal);
   }
   obtenerInfo() {
     Swal.showLoading();
@@ -125,10 +141,28 @@ export class MainComponent {
       form.value.destino = this.destinos;
       this.api.crearAdquiriente(form.value).subscribe((res: any) => {
         Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
+        this.destinos=[];
         this.modalRef.close();
         this.obtenerInfo();
-      }, error => {
-        Swal.fire({ icon: 'error', title: 'Hubo un error en crear el registro' })
+      },err => {
+        if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+        else { Swal.fire({ icon: 'warning', text: 'Hubo un error en la conexión' }); }
+      })
+    }
+  }
+  updateAdquiriente(form: NgForm) {
+    if (form.invalid) { return }
+    if (form.submitted) {
+      Swal.showLoading();
+      form.value.DESTINO = this.destinatarioObject.DESTINO;
+      this.api.updateAdquiriente(form.value).subscribe((res: any) => {
+        this.modalRef.close();
+        Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
+        this.destinatarioObject.DESTINO=[];
+        this.obtenerInfo();
+      },  err => {
+        if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+        else { Swal.fire({ icon: 'warning', text: 'Hubo un error en la conexión' }); }
       })
     }
   }
@@ -172,9 +206,23 @@ export class MainComponent {
     this.direccionDestino = '';
     this.contador++;
   }
+  crearFilasUpdate() {
+    if (this.ubigeoDestinoUpdate == '' || this.direccionDestinoUpdate == '') {
+      return Swal.fire({ icon: 'error', title: 'Complete los campos' });
+    }
+    var obj = { id: this.contador, UBIGEODESTINO: this.ubigeoDestinoUpdate, DIRECCIONDESTINO: this.direccionDestinoUpdate }
+    this.destinatarioObject.DESTINO.push(obj);
+    this.ubigeoDestinoUpdate = '';
+    this.direccionDestinoUpdate = '';
+    this.contador++;
+  }
   borrarDestinoArray(id) {
     const indice = this.destinos.findIndex((elemento) => elemento.id === id);
     this.destinos.splice(indice, 1);
+  }
+  borrarDestinoArrayUpdate(id) {
+    const indice = this.destinatarioObject.DESTINO.findIndex((elemento) => elemento.id === id);
+    this.destinatarioObject.DESTINO.splice(indice, 1);
   }
   asignarDestinatario(nombre, ndoc, correo, tipoDoc) {
     this.destinatario_input = nombre;
@@ -213,9 +261,10 @@ export class MainComponent {
       Swal.showLoading();
       var num = id.split('-');
       this.empresaid = id
-      this.api.getOrigenes(num[0]).subscribe((res: any) => {
+      this.api.getOrigenes(num[0],num[3]).subscribe((res: any) => {
         Swal.close();
-        this.origen = res;
+        this.origen = res['ORIGEN'];
+         this.arraySerie=res['SERIE'];
       }, error => {
         Swal.fire({ icon: 'error', title: 'Hubo un error en la conexión' });
       })
@@ -249,12 +298,9 @@ export class MainComponent {
     Swal.showLoading();
     this.api.getProductos().subscribe((res: any) => {
       Swal.close();
-      if (res && res.length > 0) {
         this.productos = res;
         this.abrirModal(modal);
-      }else {
-        return Swal.fire({icon:'warning',title:'No se encontro ningun producto'})
-      }
+
     }, error => {
       Swal.fire({ icon: 'error', title: 'Hubo un error en la conexión' });
     });
@@ -267,6 +313,9 @@ export class MainComponent {
   declararGuia() {
     if (this.serieNumero == '') {
       return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'El campo serie y numero esta vacio!' });
+    }
+    if (this.serieNumero.length!=13) {
+      return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'El campo serie y numero debe tener un ancho de 13 letras!' });
     }
     if (this.empresa == '') {
       return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'Seleccione una empresa!' });
@@ -321,6 +370,7 @@ export class MainComponent {
     var tipoDocRem = arrayRem[1];
     var numeroDocRem = arrayRem[0];
     var razonsocialemisorRem = arrayRem[2];
+    var codigolocalanexo= arrayRem[3];
     var motivo=this.vmotivo.split('-');
     var destino = this.vdestino.split('-');
     var origen = this.vorigen.split('-');
@@ -429,8 +479,108 @@ export class MainComponent {
       tipoLocacion: '',
       codigoAeropuerto: '',
       nombrePuertoAeropuerto: '',
-      spE_DESPATCH_ITEM: this.listadoProductoDetalles
+      spE_DESPATCH_ITEM: this.listadoProductoDetalles,
+      codigolocalanexo:codigolocalanexo
     }
     return obj;
+  }
+  crearProducto(producto:NgForm){
+    if (producto.invalid) {
+      return
+    }
+    if (producto.submitted) {
+    Swal.showLoading();
+    this.api.crearProducto(producto.value).subscribe((res:any)=>{
+      this.modalRef.close();
+      Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
+      this.cargarProductos();
+    },  err => {
+      if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+      else { Swal.fire({ icon: 'warning', text: 'Hubo un error al crear el registro' }); }
+    })
+    }
+  }
+  cargarProductos(){
+    this.api.getProductos().subscribe((res: any) => {
+      if (res && res.length > 0) {
+        this.productos = res;
+      }else{
+        this.productos = [];
+      }
+    }, error => {
+      Swal.fire({ icon: 'error', title: 'Hubo un error en la conexión' });
+    });
+  }
+  borrarProducto(id){
+    Swal.fire({
+      title: 'Estás seguro?',
+      text:'El Producto con codigo '+id+' se eliminará',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar',
+      cancelButtonText:'Salir'
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        this.api.borrarProducto(id).subscribe((res:any)=>{
+          this.cargarProductos();
+          Swal.fire({ icon: 'success', title: 'Se Eliminó con éxito' })
+        }, err => {
+          if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+          else { Swal.fire({ icon: 'warning', text: 'Hubo un error al crear el registro' }); }
+        });
+      }
+    })
+
+  }
+  borrarEmpresa(ndoc,local){
+
+  }
+  crearEmpresa(form:NgForm){
+    if (form.invalid) { return }
+    if (form.submitted) {
+      Swal.showLoading();
+      this.api.crearEmpresa(form.value).subscribe((res: any) => {
+        Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
+        this.modalRef.close();
+        this.api.getEmpresas().subscribe((res:any)=>{
+          this.tablaEmpresas=res;
+        });
+        this.obtenerInfo();
+      }, err => {
+        if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+        else { Swal.fire({ icon: 'warning', text: 'Hubo un error en la conexión' }); }
+      })
+    }
+  }
+  listarEmpresas(empresa){
+    Swal.showLoading();
+    this.api.getEmpresas().subscribe((res:any)=>{
+      Swal.close();
+      this.tablaEmpresas=res;
+      this.abrirModal(empresa);
+    });
+  }
+  listarOrigen(origen){
+    this.api.getOrigen().subscribe((res:any)=>{
+      this.abrirModal(origen);
+      this.tablaOrigenes=res;
+    });
+  }
+  crearOrigen(form){
+    if (form.invalid) { return }
+    if (form.submitted) {
+      Swal.showLoading();
+      this.api.CrearOrigen(form.value).subscribe((res: any) => {
+        Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
+        this.modalRef.close();
+        this.api.getOrigen().subscribe((res:any)=>{
+          this.tablaOrigenes=res;
+        });
+      }, err => {
+        if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+        else { Swal.fire({ icon: 'warning', text: 'Hubo un error en la conexión' }); }
+      })
+    }
+
   }
 }

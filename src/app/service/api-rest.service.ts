@@ -22,6 +22,9 @@ export class ApiRestService {
   public crearAdquiriente(form){
     return this.http.post(this.url+'AAA_',form,this.httpOptions)
   }
+  public updateAdquiriente(form){
+    return this.http.post(this.url+'AAA_/UpdateAdquiriente',form,this.httpOptions)
+  }
   public crearTransportista(form){
     return this.http.post(this.url+'AAA_/transportista',form,this.httpOptions)
   }
@@ -34,8 +37,9 @@ export class ApiRestService {
   public getProductos(){
     return this.http.get(this.url+'Producto',this.httpOptions);
   }
-  public getOrigenes(id){
-    return this.http.get(this.url+'AAA_/GetOrigen?id='+id,this.httpOptions);
+  //obtener origenes para mostrar en el select
+  public getOrigenes(id,local){
+    return this.http.get(this.url+'AAA_/GetOrigen?id='+id+'&local='+local,this.httpOptions);
   }
   public declararGuia(form){
     return this.http.post(this.url+'SPE_DESPATCH/declarar',form,this.httpOptions);
@@ -45,5 +49,24 @@ export class ApiRestService {
   }
   public getSpe_despatch_item(serie){
     return this.http.get(this.url+'SPE_DESPATCH/SPE_DESPATCH_ITEM?serie='+serie,this.httpOptions)
+  }
+  public crearProducto(producto){
+    return this.http.post(this.url+'AAA_/Producto',producto,this.httpOptions)
+  }
+  public borrarProducto(codigo:string){
+    return this.http.get(this.url+'AAA_/BorrarProducto?codigo='+codigo,this.httpOptions);
+  }
+  public crearEmpresa(empresa){
+    return this.http.post(this.url+'AAA_/Empresa',empresa,this.httpOptions);
+  }
+  public getEmpresas(){
+    return this.http.get(this.url+'AAA_/GetEmpresas',this.httpOptions);
+  }
+  //obtener origenes para mostrar en la tabla
+  public getOrigen(){
+    return this.http.get(this.url+'AAA_/GetOrigenes',this.httpOptions);
+  }
+  public CrearOrigen(form){
+    return this.http.post(this.url+'AAA_/CrearOrigen',form,this.httpOptions);
   }
 }
