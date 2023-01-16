@@ -11,20 +11,22 @@ import { Router } from '@angular/router';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent {
-  pais='PE';
-  tipodocEmp='06';
-  ubigeoDestinoUpdate='';
-  direccionDestinoUpdate='';
-  destinatarioObject:adquiriente;
-  tablaEmpresas=[];
-  tablaOrigenes=[];
-  arraySerie=[];
+  pais = 'PE';
+  tipodocEmp = '06';
+  ubigeoDestinoUpdate = '';
+  direccionDestinoUpdate = '';
+  destinatarioObject: adquiriente;
+  tablaEmpresas = [];
+  tablaOrigenes = [];
+  tablaSeries = [];
+  arraySerie = [];
   // variable para formulario crud destinatario select tipo doc
-  tipodocForm='01';
-  tipodocTrans='01';
-  tipodocChofer='01';
+  tipodocForm = '01';
+  tipodocTrans = '01';
+  tipodocChofer = '01';
+  correlativo = 0;
   //-------------------------------------------------------------
-  pageProduct=0;
+  pageProduct = 0;
   vmotivo = '';
   vmodalidad = '01';
   fecha_emision = this.fechaActual();
@@ -35,7 +37,7 @@ export class MainComponent {
   modalidad = [{ id: '01', text: 'PUBLICO', }, { id: '02', text: 'PRIVADO' }];
   medidas = [{ id: 'KGM', text: 'KGM' }, { id: 'NIU', text: 'NIU' }]
   medida = 'KGM';
-  medidaProductoCrud='KGM';
+  medidaProductoCrud = 'KGM';
   motivos = [];
   destinatarios = [];
   transportistas = [];
@@ -85,8 +87,8 @@ export class MainComponent {
   constructor(public api: ApiRestService, private modalService: NgbModal, public rout: Router) {
     this.obtenerInfo();
   }
-  EditarDestinatario(modal,contenido){
-    this.destinatarioObject=contenido;
+  EditarDestinatario(modal, contenido) {
+    this.destinatarioObject = contenido;
     this.abrirModal(modal);
   }
   obtenerInfo() {
@@ -141,10 +143,10 @@ export class MainComponent {
       form.value.destino = this.destinos;
       this.api.crearAdquiriente(form.value).subscribe((res: any) => {
         Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
-        this.destinos=[];
+        this.destinos = [];
         this.modalRef.close();
         this.obtenerInfo();
-      },err => {
+      }, err => {
         if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
         else { Swal.fire({ icon: 'warning', text: 'Hubo un error en la conexión' }); }
       })
@@ -158,9 +160,9 @@ export class MainComponent {
       this.api.updateAdquiriente(form.value).subscribe((res: any) => {
         this.modalRef.close();
         Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
-        this.destinatarioObject.DESTINO=[];
+        this.destinatarioObject.DESTINO = [];
         this.obtenerInfo();
-      },  err => {
+      }, err => {
         if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
         else { Swal.fire({ icon: 'warning', text: 'Hubo un error en la conexión' }); }
       })
@@ -225,6 +227,10 @@ export class MainComponent {
     this.destinatarioObject.DESTINO.splice(indice, 1);
   }
   asignarDestinatario(nombre, ndoc, correo, tipoDoc) {
+    this.destinatario_input = '';
+    this.correoDestinatario = '';
+    this.numeroDocDestinatario = '';
+    this.tipodocumentoadquiriente = '';
     this.destinatario_input = nombre;
     this.correoDestinatario = correo;
     this.numeroDocDestinatario = ndoc;
@@ -237,6 +243,7 @@ export class MainComponent {
     });
   }
   asignarChofer(ndoc, nombre, apellido, placa, tipoDoc, brevete) {
+    this.limpiarChofer();
     this.chofer_input = nombre + ' ' + apellido;
     this.tipoDocumentoConductor = tipoDoc;
     this.numeroDocumentoConductor = ndoc;
@@ -244,7 +251,15 @@ export class MainComponent {
     this.modalService.dismissAll();
     this.placaChofer = placa;
   }
+  limpiarChofer(){
+    this.chofer_input = '';
+    this.tipoDocumentoConductor = '';
+    this.numeroDocumentoConductor = '';
+    this.brevete = '';
+    this.placaChofer = '';
+  }
   asignarTransportista(ndoc, nombre, tipoDoc, mtc) {
+   this.limpiarTransportista();
     this.transportista_input = nombre;
     this.numeroRucTransportista = ndoc;
     this.razonSocialTransportista = nombre;
@@ -261,10 +276,12 @@ export class MainComponent {
       Swal.showLoading();
       var num = id.split('-');
       this.empresaid = id
-      this.api.getOrigenes(num[0],num[3]).subscribe((res: any) => {
+      this.api.getOrigenes(num[0], num[3]).subscribe((res: any) => {
         Swal.close();
         this.origen = res['ORIGEN'];
-         this.arraySerie=res['SERIE'];
+        this.arraySerie = res['SERIE'];
+        this.serieNumero = '';
+        this.vorigen = '';
       }, error => {
         Swal.fire({ icon: 'error', title: 'Hubo un error en la conexión' });
       })
@@ -278,7 +295,7 @@ export class MainComponent {
     this.objetoProducto.cantidad = this.cantidad.toString();
     this.objetoProducto.descripcion = this.descripcion != '' ? this.objetoProducto.descripcion + ' ' + this.descripcion : this.objetoProducto.descripcion;
     var found = this.listadoProductoDetalles.find(object => object.codigo == this.objetoProducto.codigo && object.descripcion == this.objetoProducto.descripcion && object.unidadmedida == this.objetoProducto.unidadmedida);
-    if (this.objetoProducto.codigo==null) {
+    if (this.objetoProducto.codigo == null) {
       return Swal.fire({ icon: 'error', title: 'Seleccione un producto' });
     }
     if (found) {
@@ -298,14 +315,13 @@ export class MainComponent {
     Swal.showLoading();
     this.api.getProductos().subscribe((res: any) => {
       Swal.close();
-        this.productos = res;
-        this.abrirModal(modal);
+      this.productos = res;
+      this.abrirModal(modal);
 
     }, error => {
       Swal.fire({ icon: 'error', title: 'Hubo un error en la conexión' });
     });
   }
-
   borrarListadoProductoDetalles(codigo, descripcion, cantidad, unidadmedida) {
     const indice = this.listadoProductoDetalles.findIndex((elemento) => elemento.codigo == codigo && elemento.descripcion == descripcion && elemento.cantidad == cantidad && elemento.unidadmedida == unidadmedida);
     this.listadoProductoDetalles.splice(indice, 1);
@@ -314,7 +330,7 @@ export class MainComponent {
     if (this.serieNumero == '') {
       return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'El campo serie y numero esta vacio!' });
     }
-    if (this.serieNumero.length!=13) {
+    if (this.serieNumero.length != 13) {
       return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'El campo serie y numero debe tener un ancho de 13 letras!' });
     }
     if (this.empresa == '') {
@@ -338,24 +354,24 @@ export class MainComponent {
     if (this.pesoBruto == '') {
       return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'El campo peso bruto es requerido!' });
     }
-    if (this.transportista_input == '' && this.vmodalidad=='01') {
+    if (this.transportista_input == '' && this.vmodalidad == '01') {
       return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'Seleccione un transportista!' });
     }
-    if (this.chofer_input == '' && this.vmodalidad=='02') {
+    if (this.chofer_input == '' && this.vmodalidad == '02') {
       return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'Seleccione un chofer!' });
     }
     if (this.Nrobultos != '' && Number.isNaN(this.Nrobultos)) {
       return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'El campo N° Bultos debe ser numerico!' });
     }
     console.log(Number.isNaN(this.Nrobultos));
-    if(this.listadoProductoDetalles.length==0){
+    if (this.listadoProductoDetalles.length == 0) {
       return Swal.fire({ icon: 'warning', title: 'Faltan Campos', text: 'Esta guia no tiene Detalles!' });
     }
 
     var obj = this.llenarGuia();
     Swal.showLoading();
     this.api.declararGuia(obj).subscribe((res: any) => {
-      Swal.fire({ icon: 'success', title: 'Se creó con éxito' }).then(res=>{
+      Swal.fire({ icon: 'success', title: 'Se creó con éxito' }).then(res => {
         window.location.reload();
       })
     }, err => {
@@ -366,15 +382,19 @@ export class MainComponent {
   limpiarPantalla() {
   }
   llenarGuia() {
+    if(this.vmodalidad=='01'){
+      this.limpiarChofer();
+    }else{
+      this.limpiarTransportista();
+    }
     var arrayRem = this.empresaid.split('-');
     var tipoDocRem = arrayRem[1];
     var numeroDocRem = arrayRem[0];
     var razonsocialemisorRem = arrayRem[2];
-    var codigolocalanexo= arrayRem[3];
-    var motivo=this.vmotivo.split('-');
+    var motivo = this.vmotivo.split('-');
     var destino = this.vdestino.split('-');
     var origen = this.vorigen.split('-');
-        var obj = {
+    var obj = {
       tipoDocumentoRemitente: tipoDocRem,
       numeroDocumentoRemitente: numeroDocRem,
       serieNumeroGuia: this.serieNumero,
@@ -480,48 +500,47 @@ export class MainComponent {
       codigoAeropuerto: '',
       nombrePuertoAeropuerto: '',
       spE_DESPATCH_ITEM: this.listadoProductoDetalles,
-      codigolocalanexo:codigolocalanexo
     }
     return obj;
   }
-  crearProducto(producto:NgForm){
+  crearProducto(producto: NgForm) {
     if (producto.invalid) {
       return
     }
     if (producto.submitted) {
-    Swal.showLoading();
-    this.api.crearProducto(producto.value).subscribe((res:any)=>{
-      this.modalRef.close();
-      Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
-      this.cargarProductos();
-    },  err => {
-      if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
-      else { Swal.fire({ icon: 'warning', text: 'Hubo un error al crear el registro' }); }
-    })
+      Swal.showLoading();
+      this.api.crearProducto(producto.value).subscribe((res: any) => {
+        this.modalRef.close();
+        Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
+        this.cargarProductos();
+      }, err => {
+        if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+        else { Swal.fire({ icon: 'warning', text: 'Hubo un error al crear el registro' }); }
+      })
     }
   }
-  cargarProductos(){
+  cargarProductos() {
     this.api.getProductos().subscribe((res: any) => {
       if (res && res.length > 0) {
         this.productos = res;
-      }else{
+      } else {
         this.productos = [];
       }
     }, error => {
       Swal.fire({ icon: 'error', title: 'Hubo un error en la conexión' });
     });
   }
-  borrarProducto(id){
+  borrarProducto(id) {
     Swal.fire({
       title: 'Estás seguro?',
-      text:'El Producto con codigo '+id+' se eliminará',
+      text: 'El Producto con codigo ' + id + ' se eliminará',
       showCancelButton: true,
       confirmButtonText: 'Eliminar',
-      cancelButtonText:'Salir'
+      cancelButtonText: 'Salir'
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        this.api.borrarProducto(id).subscribe((res:any)=>{
+        this.api.borrarProducto(id).subscribe((res: any) => {
           this.cargarProductos();
           Swal.fire({ icon: 'success', title: 'Se Eliminó con éxito' })
         }, err => {
@@ -532,18 +551,15 @@ export class MainComponent {
     })
 
   }
-  borrarEmpresa(ndoc,local){
-
-  }
-  crearEmpresa(form:NgForm){
+  crearEmpresa(form: NgForm) {
     if (form.invalid) { return }
     if (form.submitted) {
       Swal.showLoading();
       this.api.crearEmpresa(form.value).subscribe((res: any) => {
         Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
         this.modalRef.close();
-        this.api.getEmpresas().subscribe((res:any)=>{
-          this.tablaEmpresas=res;
+        this.api.getEmpresas().subscribe((res: any) => {
+          this.tablaEmpresas = res;
         });
         this.obtenerInfo();
       }, err => {
@@ -552,35 +568,198 @@ export class MainComponent {
       })
     }
   }
-  listarEmpresas(empresa){
+  listarEmpresas(empresa) {
     Swal.showLoading();
-    this.api.getEmpresas().subscribe((res:any)=>{
+    this.api.getEmpresas().subscribe((res: any) => {
       Swal.close();
-      this.tablaEmpresas=res;
+      this.tablaEmpresas = res;
       this.abrirModal(empresa);
     });
   }
-  listarOrigen(origen){
-    this.api.getOrigen().subscribe((res:any)=>{
+  listarOrigen(origen) {
+    this.api.getOrigen().subscribe((res: any) => {
       this.abrirModal(origen);
-      this.tablaOrigenes=res;
+      this.tablaOrigenes = res;
     });
   }
-  crearOrigen(form){
+  crearOrigen(form) {
     if (form.invalid) { return }
     if (form.submitted) {
       Swal.showLoading();
       this.api.CrearOrigen(form.value).subscribe((res: any) => {
         Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
         this.modalRef.close();
-        this.api.getOrigen().subscribe((res:any)=>{
-          this.tablaOrigenes=res;
+        this.api.getOrigen().subscribe((res: any) => {
+          this.tablaOrigenes = res;
         });
+        this.empresa = '';
       }, err => {
         if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
         else { Swal.fire({ icon: 'warning', text: 'Hubo un error en la conexión' }); }
       })
     }
 
+  }
+  listarSerie(serie) {
+    Swal.showLoading()
+    this.api.getSerie().subscribe((res: any) => {
+      Swal.close();
+      this.abrirModal(serie);
+      this.tablaSeries = res;
+    });
+  }
+  crearSerie(form) {
+    if (form.invalid) { return }
+    if (form.submitted) {
+      Swal.showLoading();
+      form.value.SERIE = form.value.SERIE.toUpperCase();
+      this.api.CrearSerie(form.value).subscribe((res: any) => {
+        Swal.fire({ icon: 'success', title: 'Se creó con éxito' })
+        this.modalRef.close();
+        this.api.getSerie().subscribe((res: any) => {
+          this.tablaSeries = res;
+        });
+        this.empresa = '';
+      }, err => {
+        if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+        else { Swal.fire({ icon: 'warning', text: 'Hubo un error en la conexión' }); }
+      })
+    }
+  }
+  borrarSerie(numDoc, serie) {
+    Swal.showLoading();
+    Swal.fire({
+      icon:'warning',
+      title: 'Estás seguro?',
+      text: 'La serie '+serie+' con el N° Doc ' + numDoc + ' se eliminará',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar',
+      confirmButtonColor:'red',
+      cancelButtonText: 'Salir'
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        this.api.BorrarSerie(numDoc, serie).subscribe((res: any) => {
+          this.api.getSerie().subscribe((res: any) => {
+            Swal.close();
+            this.tablaSeries = res;
+          });
+        }, err => {
+          if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+          else { Swal.fire({ icon: 'warning', text: 'Hubo un error en la conexión' }); }
+        })
+      }
+    })
+
+  }
+  borrarEmpresa(ndoc) {
+    Swal.showLoading();
+    Swal.fire({
+      icon:'warning',
+      title: 'Estás seguro?',
+      text: 'La empresa con el N° Doc ' + ndoc + ' se eliminará',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar',
+      confirmButtonColor:'red',
+      cancelButtonText: 'Salir'
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        this.api.BorrarEmpresa(ndoc).subscribe((res: any) => {
+          this.api.getEmpresas().subscribe((res: any) => {
+            Swal.close();
+            this.tablaEmpresas = res;
+          });
+        }, err => {
+          if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+          else { Swal.fire({ icon: 'warning', text: 'Hubo un error en la conexión' }); }
+        })
+      }
+    })
+
+  }
+  borrarOrigen(ndoc, ubigeo, direccion) {
+    Swal.showLoading();
+    Swal.fire({
+      icon:'warning',
+      title: 'Estás seguro?',
+      text: 'El Origen con el N° Doc ' + ndoc + ' y ubigeo '+ubigeo+' se eliminará',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar',
+      confirmButtonColor:'red',
+      cancelButtonText: 'Salir'
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        var obj = { numerodocumentoemisor: ndoc, ubigeoorigen: ubigeo, direccionorigen: direccion }
+        this.api.BorrarOrigen(obj).subscribe((res: any) => {
+          this.api.getOrigen().subscribe((res: any) => {
+            Swal.close();
+            this.tablaOrigenes = res;
+
+          });
+        }, err => {
+          if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+          else { Swal.fire({ icon: 'warning', text: 'Hubo un error en la conexión' }); }
+        })
+      }
+    })
+
+  }
+  borrarTransportista(ndoc) {
+    Swal.showLoading();
+    Swal.fire({
+      icon:'warning',
+      title: 'Estás seguro?',
+      text: 'El Transportista con el N° Doc ' + ndoc + ' se eliminará',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar',
+      confirmButtonColor:'red',
+      cancelButtonText: 'Salir'
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        this.api.BorrarTransportista(ndoc).subscribe((res: any) => {
+          this.api.getTransportista().subscribe((res: any) => {
+            Swal.close();
+            this.transportistas = res;
+          });
+          this.limpiarTransportista();
+        }, err => {
+          if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+          else { Swal.fire({ icon: 'warning', text: 'Hubo un error en la conexión' }); }
+        })
+      }
+    })
+  }
+  borrarChofer(ndoc){
+    Swal.showLoading();
+    Swal.fire({
+      icon:'warning',
+      title: 'Estás seguro?',
+      text: 'El Chofer con el N° Doc ' + ndoc + ' se eliminará',
+      showCancelButton: true,
+      confirmButtonText: 'Eliminar',
+      confirmButtonColor:'red',
+      cancelButtonText: 'Salir'
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        this.api.BorrarChofer(ndoc).subscribe((res: any) => {
+           this.obtenerInfo();
+           this.limpiarChofer();
+        }, err => {
+          if (err.error.detail) { Swal.fire({ icon: 'warning', text: err.error.detail }); }
+          else { Swal.fire({ icon: 'warning', text: 'Hubo un error en la conexión' }); }
+        })
+      }
+    })
+  }
+  limpiarTransportista(){
+    this.transportista_input = '';
+    this.numeroRucTransportista = '';
+    this.razonSocialTransportista = '';
+    this.tipoDocumentoTransportista = '';
+    this.mtcTransportista = '';
   }
 }

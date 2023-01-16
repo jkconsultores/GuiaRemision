@@ -69,4 +69,28 @@ export class ApiRestService {
   public CrearOrigen(form){
     return this.http.post(this.url+'AAA_/CrearOrigen',form,this.httpOptions);
   }
+  public getSerie(){
+    return this.http.get(this.url+'AAA_/getSerie',this.httpOptions);
+  }
+  public CrearSerie(form){
+    return this.http.post(this.url+'AAA_/CrearSerie',form,this.httpOptions);
+  }
+  public BorrarSerie(numdoc,serie){
+    return this.http.get(this.url+'AAA_/BorrarSerie?numdoc='+numdoc+'&serie='+serie,this.httpOptions);
+  }
+  public BorrarEmpresa(numdoc){
+    return this.http.get(this.url+'AAA_/BorrarEmpresa?numdoc='+numdoc,this.httpOptions);
+  }
+  public BorrarOrigen(form){
+    return this.http.post(this.url+'AAA_/BorrarOrigen',form,this.httpOptions);
+  }
+  public BorrarTransportista(ndoc){
+    return this.http.get(this.url+'AAA_/BorrarTransportista?numdoc='+ndoc,this.httpOptions);
+  }
+  public getTransportista(){
+    return this.http.get(this.url+'AAA_/getTransportista',this.httpOptions);
+  }
+  public BorrarChofer(ndoc){
+    return this.http.get(this.url+'AAA_/BorrarChofer?numdoc='+ndoc,this.httpOptions);
+  }
 }
