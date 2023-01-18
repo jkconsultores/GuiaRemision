@@ -143,7 +143,7 @@
         </div>
         <div class="col-2 " *ngIf="vmodalidad!='02'">
           <div class="input-group mb-1">
-            <input type="text" class="form-control" [(ngModel)]="transportista_input">
+            <input type="text" class="form-control" readonly [(ngModel)]="transportista_input">
             <div class="input-group-append">
               <button class="input-group-text" (click)="abrirModal(Transportista)">...</button>
             </div>
@@ -154,7 +154,7 @@
         </div>
         <div class="col-2" *ngIf="vmodalidad!='01'">
           <div class="input-group mb-1">
-            <input type="text" class="form-control" [(ngModel)]="chofer_input">
+            <input type="text" class="form-control" readonly [(ngModel)]="chofer_input">
             <div class="input-group-append">
               <button class="input-group-text" (click)="abrirModal(Chofer)">...</button>
             </div>
@@ -485,7 +485,7 @@
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a> N°
             Doc:</label>
           <div class="col-sm-9">
-            <input type="text" ngModel class="form-control"
+            <input type="text" ngModel class="form-control" maxlength="11"
               [ngClass]="{'is-invalid': Transportista.submitted&&Transportista.controls['NUMERODOCUMENTOTRANSPORTISTA'].errors}"
               name="NUMERODOCUMENTOTRANSPORTISTA" placeholder="Ingrese el numero de documento" required>
           </div>
@@ -512,12 +512,12 @@
           </div>
         </div>
         <div class="form-group row">
-          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a> N°
+          <label for="input" class="col-sm-2 col-form-label" style="width: 160px;">N°
             Registro Mtc:</label>
           <div class="col-sm-9">
             <input type="text" ngModel class="form-control"
               [ngClass]="{'is-invalid': Transportista.submitted&&Transportista.controls['NUMEROREGISTROMTC'].errors}"
-              name="NUMEROREGISTROMTC" placeholder="Ingrese el N° registro Mtc" required>
+              name="NUMEROREGISTROMTC" placeholder="Ingrese el N° registro Mtc">
           </div>
         </div>
       </form>
@@ -541,7 +541,7 @@
           <label for="input" class="col-sm-2 col-form-label" style="width: 160px;"><a style="color: red;">(*)</a> N°
             Doc:</label>
           <div class="col-sm-9">
-            <input type="text" ngModel class="form-control"
+            <input type="text" ngModel class="form-control" maxlength="11"
               [ngClass]="{'is-invalid': chofer.submitted&&chofer.controls['NUMERODOCUMENTOCHOFER'].errors}"
               name="NUMERODOCUMENTOCHOFER" placeholder="Ingrese el numero de documento" required>
           </div>
@@ -607,12 +607,22 @@
 <ng-template #Producto>
   <div class="card">
     <div class="card-header">
-      <div class="container">
-        <h5>PRODUCTO &nbsp; &nbsp;</h5>
-        <button class="btn btn-secondary" (click)="abrirModal(CrudProducto)">+</button>
-      </div>
+        <h5>PRODUCTO</h5>
     </div>
     <div class="card-body" style="min-height: 200px;">
+      <div class="row">
+        <div class="col-3">
+          <label style="width: 150px;">DESTINATARIO</label>
+        </div>
+        <div class="col-9">
+          <div class="input-group mb-1">
+            <input type="text" [(ngModel)]="filterProducto" name="filterProducto" class="form-control">
+            <div class="input-group-append">
+              <button class="input-group-text" (click)="abrirModal(CrudProducto)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="table-responsive" style="max-height: 400px;">
         <table class="table table-bordered table-hover">
           <thead>
@@ -625,7 +635,7 @@
           </thead>
           <tbody>
             <tr (click)="seleccionarProducto(item.codigo,item.descripcion,item.unidadmedida,i)"
-              *ngFor="let item of productos| paginate: {id:'pasistencia', itemsPerPage: 10, currentPage: pageProduct } ; let i = index "
+              *ngFor="let item of productos| filter:filterProducto:['descripcion','codigo'] | paginate: {id:'pasistencia', itemsPerPage: 8, currentPage: pageProduct } ; let i = index "
               style="cursor: pointer;" [ngClass]="{'selected-row': i === selectedRow}">
               <td>{{item.codigo}}</td>
               <td>{{item.descripcion}}</td>

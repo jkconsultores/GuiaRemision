@@ -12,6 +12,7 @@ import { FacturacionElectronicaComponent } from './pages/facturacion-electronica
 import { NavbarComponent } from './pages/navbar/navbar.component';
 import { ReporteComponent } from './pages/reporte/reporte.component';
 import {NgxPaginationModule} from 'ngx-pagination';
+import { FilterPipe } from './pipes/filter.pipe';
 @NgModule({
   declarations: [
     AppComponent,
@@ -20,7 +21,8 @@ import {NgxPaginationModule} from 'ngx-pagination';
     ModalComponent,
     FacturacionElectronicaComponent,
     NavbarComponent,
-    ReporteComponent
+    ReporteComponent,
+    FilterPipe
   ],
   imports: [
     BrowserModule,

@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent {
+  filterProducto='';
   pais = 'PE';
   tipodocEmp = '06';
   ubigeoDestinoUpdate = '';
@@ -22,7 +23,7 @@ export class MainComponent {
   arraySerie = [];
   // variable para formulario crud destinatario select tipo doc
   tipodocForm = '01';
-  tipodocTrans = '01';
+  tipodocTrans = '06';
   tipodocChofer = '01';
   correlativo = 0;
   //-------------------------------------------------------------
